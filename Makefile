@@ -1,68 +1,89 @@
 
-GITREF = .git/refs/heads
+GITREFS = .git/refs/heads
 
 .PHONY: all
 all: ./build/pypyjs/build/pypy.vm.js \
-     ./build/pypyjs/build/pypy \
-     ./build/cpython/python \
-     ./build/v8/d8 \
-     ./build/gecko-dev/js/src/build/dist/bin/js
+     ./build/bin/pypy \
+     ./build/bin/python \
+     ./build/bin/js \
+     ./build/bin/d8
+
 
 # XXX TODO: how to ensure we use a consistent build environment?
 # Should we specify a specific docker image tag?
 
-./build/pypyjs/$(GITREF)/master:
-	mkdir -p build
+
+./build/pypyjs/$(GITREFS)/master:
+	mkdir -p ./build ./bin
 	git clone --recursive https://github.com/rfk/pypyjs ./build/pypyjs
 
 
-./build/cpython/$(GITREF)/2.7:
-	mkdir -p build
+./build/cpython/$(GITREFS)/2.7:
+	mkdir -p ./build ./bin
 	git clone https://github.com/python/cpython ./build/cpython
 	cd ./build/cpython && git checkout -t origin/2.7
 
 
-./build/v8/$(GITREF)/master:
-	mkdir -p build
+./build/v8/$(GITREFS)/master:
+	mkdir -p ./build ./bin
 	git clone https://github.com/v8/v8-git-mirror ./build/v8
 
 
-./build/gecko-dev/$(GITREF)/master:
-	mkdir -p build
+./build/gecko-dev/$(GITREFS)/master:
+	mkdir -p ./build ./bin
 	git clone https://github.com/mozilla/gecko-dev ./build/gecko-dev
 
 
-./build/pypyjs/build/pypy.vm.js: ./build/pypyjs/$(GITREF)/master
+./build/depot_tools/$(GITREFS)/master:
+	mkdir -p ./build ./bin
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+
+
+./build/pypyjs/build/pypy.vm.js: ./build/pypyjs/$(GITREFS)/master
 	cd ./build/pypyjs && make ./build/pypy.vm.js
 
 
-./build/pypyjs/build/pypy: ./build/pypyjs/$(GITREF)/master
-	cd ./build/pypyjs && make ./build/pypy
+./build/bin/pypy: ./build/pypyjs/$(GITREFS)/master
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --output=./build/pypy ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	ln -fs ../pypyjs/build/pypy ./build/bin/pypy
 
 
-./build/cpython/python: ./build/cpython/$(GITREF)/2.7
+./build/bin/python: ./build/cpython/$(GITREFS)/2.7
 	cd ./build/cpython && ./configure CC="clang -m32"
 	cd ./build/cpython && make
 	if [ -f ./build/cpython/python.exe ]; then cd ./build/cpython/ && ln -fs python.exe python; fi;
+	ln -fs ../cpython/python ./build/bin/python
 
 
-./build/v8/d8: ./build/v8/$(GITREF)/master
-	# XXX TODO: this needs "gclient" from depot_tools
-	cd ./build/v8 && make dependencies
-	cd ./build/v8 && make x64.release
-	cd ./build/v8 && ln -sf ./out/x64.release/d8 ./d8
-
-
-./build/gecko-dev/js/src/build/dist/bin/js: ./build/gecko-dev/$(GITREF)/master
+./build/bin/js: ./build/gecko-dev/$(GITREFS)/master
 	cd ./build/gecko-dev/js/src && `which autoconf2.13 autoconf-2.13 autoconf213`
-	cd ./build/gecko-dev/js/src && mkdir build
+	cd ./build/gecko-dev/js/src && mkdir -p build
 	cd ./build/gecko-dev/js/src/build && ../configure --enable-optimize --disable-debug
 	cd ./build/gecko-dev/js/src/build && make
+	ln -fs ../gecko-dev/js/src/build/dist/bin/js ./build/bin/js
+
+
+./build/bin/d8: ./build/v8/$(GITREFS)/master \
+                ./build/depot_tools/$(GITREFS)/master
+	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make dependencies
+	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make x64.release
+	ln -fs ../v8/out/x64.release/d8 ./build/bin/d8
 
 
 .PHONY: update
-update: ./build/pypyjs/$(GITREF)/master ./build/cpython/$(GITREF)/2.7
+update:
 	cd ./build/pypyjs && git pull
 	cd ./build/cpython && git pull
-	cd ./build/v8 && git pull
 	cd ./build/gecko-dev && git pull
+	cd ./build/depot_tools && git pull
+	cd ./build/v8 && git pull
+
+
+.PHONY: clean
+clean:
+	cd ./build/v8 && rm -f pypy python js d8
+	rm -rf ./build/pypyjs/build
+	cd ./build/cpython && make clean
+	rm -rf ./build/gecko-dev/js/src/build
+	cd ./build/v8 && make clean
