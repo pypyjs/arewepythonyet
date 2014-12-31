@@ -1,16 +1,49 @@
 
-GITREFS = .git/refs/heads
-
 .PHONY: all
-all: ./build/pypyjs/build/pypy.vm.js \
+all: build bench
+
+
+.PHONY: build
+build: ./build/pypyjs/build/pypy.vm.js \
      ./build/bin/pypy \
      ./build/bin/python \
      ./build/bin/js \
      ./build/bin/d8
 
 
+.PHONY: bench
+bench:
+	PYTHONPATH=$(CURDIR) python -m arewepythonyet ./
+
+
+.PHONY: update
+update:
+	cd ./build/pypyjs && git pull
+	cd ./build/cpython && git pull
+	cd ./build/gecko-dev && git pull
+	cd ./build/depot_tools && git pull
+	cd ./build/v8 && git pull
+
+
+.PHONY: clean
+clean:
+	cd ./build/v8 && rm -f pypy python js d8
+	rm -rf ./build/pypyjs/build
+	cd ./build/cpython && make clean
+	rm -rf ./build/gecko-dev/js/src/build
+	cd ./build/v8 && make clean
+
+
+.PHONY: clobber
+clobber:
+	rm -rf ./build
+
+
 # XXX TODO: how to ensure we use a consistent build environment?
 # Should we specify a specific docker image tag?
+
+
+GITREFS = .git/refs/heads
 
 
 ./build/pypyjs/$(GITREFS)/master:
@@ -69,21 +102,3 @@ all: ./build/pypyjs/build/pypy.vm.js \
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make dependencies
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make x64.release
 	ln -fs ../v8/out/x64.release/d8 ./build/bin/d8
-
-
-.PHONY: update
-update:
-	cd ./build/pypyjs && git pull
-	cd ./build/cpython && git pull
-	cd ./build/gecko-dev && git pull
-	cd ./build/depot_tools && git pull
-	cd ./build/v8 && git pull
-
-
-.PHONY: clean
-clean:
-	cd ./build/v8 && rm -f pypy python js d8
-	rm -rf ./build/pypyjs/build
-	cd ./build/cpython && make clean
-	rm -rf ./build/gecko-dev/js/src/build
-	cd ./build/v8 && make clean
