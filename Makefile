@@ -1,10 +1,16 @@
 
+
+GITREFS = .git/refs/heads
+
+
 .PHONY: all
 all: build bench
 
 
 .PHONY: build
-build: ./build/pypyjs/build/pypy.vm.js \
+build: \
+     ./build/lib/pypy/package.json \
+     ./build/lib/pypy-nojit/package.json \
      ./build/bin/pypy \
      ./build/bin/python \
      ./build/bin/js \
@@ -17,7 +23,9 @@ bench:
 
 
 .PHONY: update
-update:
+update: ./build/pypyjs/$(GITREFS)/master ./build/cpython/$(GITREFS)/2.7 \
+        ./build/gecko-dev/$(GITREFS)/master ./build/v8/$(GITREFS)/master \
+        ./build/depot_tools/$(GITREFS)/master
 	cd ./build/pypyjs && git pull
 	cd ./build/cpython && git pull
 	cd ./build/gecko-dev && git pull
@@ -39,42 +47,46 @@ clobber:
 	rm -rf ./build
 
 
-# XXX TODO: how to ensure we use a consistent build environment?
-# Should we specify a specific docker image tag?
-
-
-GITREFS = .git/refs/heads
-
 
 ./build/pypyjs/$(GITREFS)/master:
-	mkdir -p ./build ./bin
+	mkdir -p ./build/bin
 	git clone --recursive https://github.com/rfk/pypyjs ./build/pypyjs
 
 
 ./build/cpython/$(GITREFS)/2.7:
-	mkdir -p ./build ./bin
+	mkdir -p ./build/bin
 	git clone https://github.com/python/cpython ./build/cpython
 	cd ./build/cpython && git checkout -t origin/2.7
 
 
 ./build/v8/$(GITREFS)/master:
-	mkdir -p ./build ./bin
+	mkdir -p ./build/bin
 	git clone https://github.com/v8/v8-git-mirror ./build/v8
 
 
 ./build/gecko-dev/$(GITREFS)/master:
-	mkdir -p ./build ./bin
+	mkdir -p ./build/bin
 	git clone https://github.com/mozilla/gecko-dev ./build/gecko-dev
 
 
 ./build/depot_tools/$(GITREFS)/master:
-	mkdir -p ./build ./bin
-	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+	mkdir -p ./build/bin
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git ./build/depot_tools
 
 
 
-./build/pypyjs/build/pypy.vm.js: ./build/pypyjs/$(GITREFS)/master
-	cd ./build/pypyjs && make ./build/pypy.vm.js
+./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master
+	mkdir -p ./build/lib
+	cd ./build/pypyjs && make release
+	cd ./build/lib && tar -xzf ../pypyjs/build/pypy.js-*.tar.gz 
+	cd ./build/lib && mv pypy.js-* pypy
+
+
+./build/lib/pypy-nojit/package.json: ./build/pypyjs/$(GITREFS)/master
+	mkdir -p ./build/lib
+	cd ./build/pypyjs && make release-nojit
+	cd ./build/lib && tar -xzf ../pypyjs/build/pypy-nojit.js-*.tar.gz 
+	cd ./build/lib && mv pypy-nojit.js-* pypy-nojit
 
 
 ./build/bin/pypy: ./build/pypyjs/$(GITREFS)/master
