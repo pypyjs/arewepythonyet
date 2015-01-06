@@ -1,6 +1,7 @@
 
 
 GITREFS = .git/refs/heads
+VENV = ./build/venv
 
 
 .PHONY: all
@@ -14,12 +15,13 @@ build: \
      ./build/bin/pypy \
      ./build/bin/python \
      ./build/bin/js \
-     ./build/bin/d8
+     ./build/bin/d8 \
+     $(VENV)/COMPLETE
 
 
 .PHONY: bench
-bench:
-	PYTHONPATH=$(CURDIR) python -m arewepythonyet ./
+bench: $(VENV)/COMPLETE
+	PYTHONPATH=$(CURDIR) $(VENV)/bin/python -m arewepythonyet ./
 
 
 .PHONY: update
@@ -97,8 +99,7 @@ clobber:
 ./build/bin/python: ./build/cpython/$(GITREFS)/2.7
 	cd ./build/cpython && ./configure CC="clang -m32"
 	cd ./build/cpython && make
-	if [ -f ./build/cpython/python.exe ]; then cd ./build/cpython/ && ln -fs python.exe python; fi;
-	ln -fs ../cpython/python ./build/bin/python
+	if [ -f ./build/cpython/python.exe ]; then ln -fs ../cpython/python.exe ./build/bin/python; else ln -fs ../cpython/python ./build/bin/python; fi;
 
 
 ./build/bin/js: ./build/gecko-dev/$(GITREFS)/master
@@ -114,3 +115,9 @@ clobber:
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make dependencies
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make x64.release
 	ln -fs ../v8/out/x64.release/d8 ./build/bin/d8
+
+
+$(VENV)/COMPLETE: ./requirements.txt ./build/bin/python
+	virtualenv --no-site-packages  --python=python2.7 $(VENV)
+	$(VENV)/bin/pip install -r ./requirements.txt
+	touch $(VENV)/COMPLETE
