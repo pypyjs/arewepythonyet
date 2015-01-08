@@ -5,4 +5,3 @@ if __name__ == "__main__":
     import arewepythonyet
     res = arewepythonyet.main(sys.argv)
     sys.exit(res)
-

@@ -33,6 +33,7 @@ update: ./build/pypyjs/$(GITREFS)/master ./build/cpython/$(GITREFS)/2.7 \
 	cd ./build/gecko-dev && git pull
 	cd ./build/depot_tools && git pull
 	cd ./build/v8 && git pull
+	docker pull rfkelly/pypyjs-build
 
 
 .PHONY: clean
