@@ -1,5 +1,5 @@
 var tStart = +new Date();
-load("./build/lib/pypy/lib/pypy.js")
+load("{{pypyjs_lib}}")
 var vm = new PyPyJS();
 vm.ready.then(function() {
   var tFinish = +new Date();

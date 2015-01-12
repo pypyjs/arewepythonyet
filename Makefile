@@ -13,6 +13,7 @@ build: \
      ./build/lib/pypy/package.json \
      ./build/lib/pypy-nojit/package.json \
      ./build/bin/pypy \
+     ./build/bin/pypy-nojit \
      ./build/bin/python \
      ./build/bin/js \
      ./build/bin/d8 \
@@ -93,8 +94,14 @@ clobber:
 
 
 ./build/bin/pypy: ./build/pypyjs/$(GITREFS)/master
-	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --output=./build/pypy ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
-	ln -fs ../pypyjs/build/pypy ./build/bin/pypy
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --output=./deps/pypy/pypy.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	ln -fs ../pypyjs/deps/pypy/pypy.exe ./build/bin/pypy
+
+
+./build/bin/pypy-nojit: ./build/pypyjs/$(GITREFS)/master
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=2 --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --output=./deps/pypy/pypy-nojit.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	ln -fs ../pypyjs/deps/pypy/pypy-nojit.exe ./build/bin/pypy-nojit
+
 
 
 ./build/bin/python: ./build/cpython/$(GITREFS)/2.7
