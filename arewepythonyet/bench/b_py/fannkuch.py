@@ -65,4 +65,5 @@ def main(n):
     return times
     
 if __name__ == "__main__":
-    print min(main(1))
+    for result in main(20):
+        print result

@@ -124,13 +124,6 @@ def main(n, ref='sun'):
         times.append(tk - t0)
     return times
 
-#if __name__ == "__main__":
-#    parser = optparse.OptionParser(
-#        usage="%prog [options]",
-#        description="Test the performance of the 2.5 compatible nbody benchmark")
-#    util.add_standard_options_to(parser)
-#    options, args = parser.parse_args()
-#
-#    util.run_benchmark(options, options.num_runs, main)
-
-print min(main(1))
+if __name__ == "__main__":
+    for result in main(20):
+        print result

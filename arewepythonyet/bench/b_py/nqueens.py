@@ -68,4 +68,6 @@ def test_n_queens(iterations):
     return times
 
 
-print min(test_n_queens(5))
+if __name__ == "__main__":
+    for result in test_n_queens(20):
+        print result

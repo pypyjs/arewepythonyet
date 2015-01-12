@@ -433,4 +433,5 @@ def test_richards(iterations):
 
 
 if __name__ == '__main__':
-    print min(test_richards(1))
+    for result in test_richards(20):
+        print result

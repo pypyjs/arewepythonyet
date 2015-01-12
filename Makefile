@@ -120,7 +120,7 @@ clobber:
 
 ./build/bin/d8: ./build/v8/$(GITREFS)/master \
                 ./build/depot_tools/$(GITREFS)/master
-	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make dependencies
+	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make dependencies || true
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make x64.release
 	ln -fs ../v8/out/x64.release/d8 ./build/bin/d8
 
