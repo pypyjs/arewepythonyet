@@ -21,31 +21,27 @@ def main(argv):
         raise ValueError("at most one argv required")
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     machine_details = get_machine_details()
-    res_filename = "bench-{timestamp}-{platform}-{fingerprint}.json".format(
+    benv = BenchEnvironment(root_dir)
+    results = {}
+    results["timestamp"] = timestamp
+    results["machine_details"] = machine_details
+    results["build_details"] = benv.get_build_details()
+    results["benchmarks"] = benv.run_benchmarks()
+    res_dir = os.path.join(root_dir, "results", "bench")
+    if not os.path.isdir(res_dir):
+        os.makedirs(res_dir)
+    res_filename = "{timestamp}-{platform}-{fingerprint}.json".format(
         timestamp=timestamp,
         platform=machine_details["platform"],
         fingerprint=machine_details["fingerprint"],
     )
-    res_dir = os.path.join(root_dir, "results")
-    res_file = open(os.path.join(res_dir, res_filename), "w")
-    try:
-        benv = BenchEnvironment(root_dir)
-        results = {}
-        results["timestamp"] = timestamp
-        results["machine_details"] = machine_details
-        results["build_details"] = benv.get_build_details()
-        results["benchmarks"] = benv.run_benchmarks()
+    with open(os.path.join(res_dir, res_filename), "w") as res_file:
         json.dump(results, res_file,
             ensure_ascii=True,
             allow_nan=False,
             sort_keys=True,
             indent=4,
         )
-    except Exception:
-        os.unlink(os.path.join(res_dir, res_filename))
-        raise
-    finally:
-        res_file.close()
 
 
 def get_machine_details():
@@ -67,7 +63,7 @@ def get_machine_details():
 
 class BenchEnvironment(object):
 
-    NUM_RUNS = 2
+    NUM_RUNS = 5
 
     def __init__(self, root_dir):
         self.root_dir = root_dir
@@ -145,16 +141,51 @@ class BenchEnvironment(object):
         return details
 
     def run_benchmarks(self):
-        # Each named benchmark is a dict mapping engine names to a list
-        # of numeric benchmark results.  The engine name indicates the
-        # particular flavour of python as well as the javascript engine
-        # in use, e.g. "cpython" or "d8+pypyjs-nojit".
+        results = {}
+        results["misc"] = self._run_misc_benchmarks()
+        results["py"] = self._run_py_benchmarks()
+        results["js"] = self._run_js_benchmarks()
+        return results
+
+    def _run_misc_benchmarks(self):
         results = {}
         results["file_size_raw"] = self._run_benchmark_file_size_raw()
         results["file_size_gz"] = self._run_benchmark_file_size_gz()
-        results["load_time"] = self._run_benchmark_load_time()
-        results["pystone_cold"] = self._run_benchmark_pystone_cold()
-        results["pystone_warm"] = self._run_benchmark_pystone_warm()
+        results["load_time"] = self._run_js_benchmark("load_time.js")
+        results["pystone_cold"] = self._run_py_benchmark("pystone_cold.py")
+        results["pystone_warm"] = self._run_py_benchmark("pystone_warm.py")
+        return results
+
+    def _run_py_benchmarks(self):
+        results = {}
+        results["nqueens"] = self._run_py_benchmark("nqueens.py")
+        results["chaos"] = self._run_py_benchmark("chaos.py")
+        results["fannkuch"] = self._run_py_benchmark("fannkuch.py")
+        results["float"] = self._run_py_benchmark("float.py")
+        results["nbody_modified"] = self._run_py_benchmark("nbody_modified.py")
+        results["richards"] = self._run_py_benchmark("richards.py")
+        results["spectral-norm"] = self._run_py_benchmark("spectral-norm.py")
+        results["meteor-contest"] = self._run_py_benchmark("meteor-contest.py")
+        # XXX TODO: the following are additional front-page pypy benchmarks
+        # that are a little trickier to run, and so haven't been added to
+        # the suite yet.
+        # results["django"] = self._run_py_benchmark("django.py")
+        # results["html5lib"] = self._run_py_benchmark("html5lib.py")
+        # results["rietveld"] = self._run_py_benchmark("rietveld.py")
+        # results["slowspitfire"] = self._run_py_benchmark("slowspitfire.py")
+        # results["spambayes"] = self._run_py_benchmark("spambayes.py")
+        # results["spitfire"] = self._run_py_benchmark("spitfire.py")
+        # results["spitfire_cstringio"] = self._run_py_benchmark("spitfire_cstringio.py")
+        # results["telco"] = self._run_py_benchmark("telco.py")
+        # results["twisted_iteration"] = self._run_py_benchmark("twisted_iteration.py")
+        # results["twisted_names"] = self._run_py_benchmark("twisted_names.py")
+        # results["twisted_pb"] = self._run_py_benchmark("twisted_pb.py")
+        # results["twisted_tcp"] = self._run_py_benchmark("twisted_tcp.py")
+        return results
+
+    def _run_js_benchmarks(self):
+        results = {}
+        # XXX TODO: some useful javascript/python comparison benchmarks?
         return results
 
     def _run_benchmark_file_size_raw(self):
@@ -175,11 +206,13 @@ class BenchEnvironment(object):
             if not isinstance(engine, JSEngine):
                 continue
             name = engine.name.split("+")[1]
-            results[name] = [0]
-            for filename in ("pypy.js", "pypy.vm.js",):
-                results[name][0] += get_size(engine, filename)
-            for filename in ("pypy.vm.js.mem",):
-                results[name][0] += get_size(engine, filename, ignore=True)
+            if name not in results:
+                print "Measuring file size for {}".format(name)
+                results[name] = [0]
+                for filename in ("pypy.js", "pypy.vm.js",):
+                    results[name][0] += get_size(engine, filename)
+                for filename in ("pypy.vm.js.mem",):
+                    results[name][0] += get_size(engine, filename, ignore=True)
 
         return results
 
@@ -202,45 +235,15 @@ class BenchEnvironment(object):
             if not isinstance(engine, JSEngine):
                 continue
             name = engine.name.split("+")[1]
-            results[name] = [0]
-            for filename in ("pypy.js", "pypy.vm.js",):
-                results[name][0] += get_size(engine, filename)
-            for filename in ("pypy.vm.js.mem",):
-                results[name][0] += get_size(engine, filename, ignore=True)
+            if name not in results:
+                print "Measuring compressed file size for {}".format(name)
+                results[name] = [0]
+                for filename in ("pypy.js", "pypy.vm.js",):
+                    results[name][0] += get_size(engine, filename)
+                for filename in ("pypy.vm.js.mem",):
+                    results[name][0] += get_size(engine, filename, ignore=True)
 
         return results
-
-    def _run_benchmark_load_time(self):
-        """Benchmark tracking time to load a usable interpreter.
-
-        This benchmark tracks the time taken to load, parse, and process
-        the pypy.js interpreter code into a state where it can start
-        executing - essentially, the time between instantiating a new
-        interpreter and its 'ready' promise being fulfilled.
-
-        Results are reported as load time in milliseconds for each js engine.
-        """
-        return self._run_js_benchmark("load_time.js")
-
-    def _run_benchmark_pystone_cold(self):
-        """Benchmark tracking pystones-per-second with cold JIT.
-
-        This benchmark tracks the number of pystones-per-second achieved
-        without allowing JIT warmup.  Larger numbers are better.
-
-        Results are reported as pystones/second count for each js engine.
-        """
-        return self._run_py_benchmark("pystone_cold.py")
-
-    def _run_benchmark_pystone_warm(self):
-        """Benchmark tracking pystones-per-second with warm JIT.
-
-        This benchmark tracks the number of pystones-per-second achieved
-        when allowing JIT warmup.  Larger numbers are better.
-
-        Results are reported as pystones/second count for each js engine.
-        """
-        return self._run_py_benchmark("pystone_warm.py")
 
     def _run_js_benchmark(self, name):
         """Helper to run a js file benchmark across all engines.
@@ -251,11 +254,13 @@ class BenchEnvironment(object):
         result of the benchmark.
         """
         results = {}
+        N = self.NUM_RUNS
         js_file = os.path.join(os.path.dirname(__file__), "benchmarks", name)
         for engine in self.engines:
+            print "Measuring {} on {}".format(name, engine.name)
             try:
                 results[engine.name] = list(
-                    engine.run_js_benchmark(js_file) for _ in xrange(self.NUM_RUNS)
+                    engine.run_js_benchmark(js_file) for _ in xrange(N)
                 )
             except NotImplementedError:
                 pass
@@ -270,11 +275,13 @@ class BenchEnvironment(object):
         of the benchmark.
         """
         results = {}
+        N = self.NUM_RUNS
         py_file = os.path.join(os.path.dirname(__file__), "benchmarks", name)
         for engine in self.engines:
+            print "Measuring {} on {}".format(name, engine.name)
             try:
                 results[engine.name] = list(
-                    engine.run_py_benchmark(py_file) for _ in xrange(self.NUM_RUNS)
+                    engine.run_py_benchmark(py_file) for _ in xrange(N)
                 )
             except NotImplementedError:
                 pass
@@ -340,15 +347,28 @@ class JSEngine(Engine):
         return float(output)
 
     def run_py_benchmark(self, filename):
-        py_stmts = []
+        # XXX TODO: the pypy.js automagic-module-file-loader currently
+        # can't handle import statements in multi-line source code.
+        # For now we parse out our imports and load them explicitly,
+        # but we should eventually fix the bug on the JS side...
+        py_lines = []
+        py_imports = []
         with open(filename, "r") as f:
             for ln in f:
-                py_stmts.append(repr(ln))
-        py_code =")\n}).then(function(){\nreturn vm.eval(".join(py_stmts)
-        py_code = "return vm.eval(" + py_code + ")"
+                py_lines.append(ln)
+                if ln.startswith("import "):
+                    py_imports.append(ln.split()[1])
+                if ln.startswith("from "):
+                    impname = ln.split()
+                    impname = impname[1] + "." + impname[3]
+                    py_imports.append(impname)
+        kwds = {
+            "py_code": repr("".join(py_lines)),
+            "py_imports": repr(py_imports),
+        }
         runner = os.path.join(os.path.dirname(__file__),
                               "benchmarks", "py_runner.js")
-        with self._templated_file(runner, py_code=py_code) as t_filename:
+        with self._templated_file(runner, **kwds) as t_filename:
             cmd = [self.js_shell, t_filename]
             output = self.benv.bt(cmd).strip()
         if not output:
