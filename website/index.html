@@ -20,47 +20,42 @@
   <div class="navbar navbar-inverse">
     <div class="container">
       <div class="navbar-header">
-        <a class="navbar-brand">arewepythonyet</a>
+        <a class="navbar-brand">Are we Python yet?</a>
       </div>
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li class="active"><a href="#">Home</a></li>
-          <li><a href="http://pypyjs.org/">PyPy.js</a></li>
+          <li><a href="#">Home</a></li>
           <li><a href="https://github.com/rfk/arewepythonyet">Code</a></li>
+          <li><a href="http://pypyjs.org/">PyPy.js</a></li>
         </ul>
       </div>
     </div>
   </div>
 
   <div class='container'>
-    <div class="text-center">
-      <h1>Are we python yet?</h1>
-    </div>
-
-    <p>Wherein we put up some numbers to track pypy.js performance over time.</p>
 
     <div class="row">
-      <div class="col-lg-6">
-        <h2>File Size</h2>
+      <div class="col-lg-4">
+        <h2>Performance</h2>
+        <p>Here's a litte blurb about these results, how we measure them, what they mean, blah blah.</p>
       </div>
-      <div class="col-lg-6">
-        <h2>Load Time</h2>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-lg-6">
-        <h2>Pystone Cold</h2>
-      </div>
-      <div class="col-lg-6">
-        <h2>Pystone Hot</h2>
+      <div class="col-lg-8">
+        <div class="row">
+          <div class="col-lg-12 col-graph" id="graph-py-bars"></div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12 col-graph" id="graph-py-line"></div>
+        </div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-lg-12">
-        <h2>The PyPy Benchmarks</h2>
+      <div class="col-lg-4">
+        <h2>Startup Overhead</h2>
+        <p>Here's a litte blurb about these results, how we measure them, what they mean, blah blah.</p>
       </div>
+      <div class="col-lg-4 col-graph" id="graph-file-size"></div>
+      <div class="col-lg-4 col-graph" id="graph-load-time"></div>
     </div>
 
   </div>
@@ -69,6 +64,7 @@
   <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js'></script>
   <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js' charset='utf-8'></script>
   <script src='js/metricsgraphics.js'></script>
+  <script src='js/main.js'></script>
 </body>
 
 </html>
