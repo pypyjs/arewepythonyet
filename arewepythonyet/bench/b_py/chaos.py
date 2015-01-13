@@ -274,5 +274,5 @@ if __name__ == "__main__":
     # XXX TODO: one of the first 20 iterations crashes in pypyjs.
     # This is probably due to badly-JITed code on our part :-(
     #for result in main(20):
-    for result in main(2):
+    for result in main(1):
         print result

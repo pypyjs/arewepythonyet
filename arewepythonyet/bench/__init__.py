@@ -6,10 +6,11 @@ This module exports the function bench() which can be called to perform
 a full benchmark run of all python engines available in the build environment.
 It'll eventually grow support for running with subsets of engines/benchmarks.
 
-The return value is dict of benchmark categories, each of which contains
-a dict mapping python engine names to benchmark results.  Results are typically
-a best-of-N score from running that particular benchmark.  Individual
-benchmarks may use e.g. geometric mean of several sample runs of a benchmark.
+The return value is dict of benchmark results along with system metadata.
+The results are a set of nested dicts grouping the results by category name,
+then by individual benchmark, then by python engine in use.  For each engine
+we record a list of output from multiple runs, each of which may produce
+a sequence of individual timing results.
 
 """
 
@@ -67,7 +68,7 @@ def geometric_mean(results):
 
 class BenchEnvironment(object):
 
-    def __init__(self, root_dir, num_runs=1):
+    def __init__(self, root_dir, num_runs=3):
         self.root_dir = root_dir
         self.num_runs = num_runs
         self.engines = []
@@ -201,11 +202,11 @@ class BenchEnvironment(object):
             name = engine.name.split("+")[1]
             if name not in results:
                 print "Measuring file size for {}".format(name)
-                results[name] = [0]
+                results[name] = 0
                 for filename in ("pypy.js", "pypy.vm.js",):
-                    results[name][0] += get_size(engine, filename)
+                    results[name] += get_size(engine, filename)
                 for filename in ("pypy.vm.js.mem",):
-                    results[name][0] += get_size(engine, filename, ignore=True)
+                    results[name] += get_size(engine, filename, ignore=True)
 
         return results
 
@@ -230,11 +231,11 @@ class BenchEnvironment(object):
             name = engine.name.split("+")[1]
             if name not in results:
                 print "Measuring compressed file size for {}".format(name)
-                results[name] = [0]
+                results[name] = 0
                 for filename in ("pypy.js", "pypy.vm.js",):
-                    results[name][0] += get_size(engine, filename)
+                    results[name] += get_size(engine, filename)
                 for filename in ("pypy.vm.js.mem",):
-                    results[name][0] += get_size(engine, filename, ignore=True)
+                    results[name] += get_size(engine, filename, ignore=True)
 
         return results
 
@@ -253,7 +254,7 @@ class BenchEnvironment(object):
             if not isinstance(engine, JSEngine):
                 continue
             print "Measuring {} on {}".format(b_name, engine.name)
-            results[engine.name] = min(
+            results[engine.name] = list(
                 engine.run_js_benchmark(js_file) for _ in xrange(self.num_runs)
             )
         return results
@@ -271,7 +272,7 @@ class BenchEnvironment(object):
         b_name = name.rsplit("/", 1)[-1]
         for engine in self.engines:
             print "Measuring {} on {}".format(b_name, engine.name)
-            results[engine.name] = min(
+            results[engine.name] = list(
                 engine.run_py_benchmark(py_file) for _ in xrange(self.num_runs)
             )
         return results
@@ -308,8 +309,7 @@ class NativeEngine(Engine):
         output = self.benv.bt(cmd).strip()
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
-        results = [float(res.strip()) for res in output.split()]
-        return geometric_mean(results)
+        return [float(res.strip()) for res in output.split()]
 
 
 class JSEngine(Engine):
@@ -335,8 +335,7 @@ class JSEngine(Engine):
             output = self.benv.bt(cmd).strip()
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
-        results = [float(res.strip()) for res in output.split()]
-        return geometric_mean(results)
+        return [float(res.strip()) for res in output.split()]
 
     def run_py_benchmark(self, filename):
         # XXX TODO: the pypy.js automagic-module-file-loader currently
@@ -365,11 +364,10 @@ class JSEngine(Engine):
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
         try:
-            results = [float(res.strip()) for res in output.split()]
+            return [float(res.strip()) for res in output.split()]
         except ValueError:
-            print output
+            print "ERROR:", output
             raise
-        return geometric_mean(results)
 
     @contextlib.contextmanager
     def _templated_file(self, filename, **kwds):
