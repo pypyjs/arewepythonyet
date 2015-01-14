@@ -24,7 +24,11 @@
       </div>
       <div class="collapse navbar-collapse">
         <ul class="nav navbar-nav">
-          <li><a href="#">Home</a></li>
+          <li><a href="#">Overview</a></li>
+          <li><a href="https://github.com/rfk/arewepythonyet">Performance</a></li>
+          <li><a href="http://pypyjs.org/">Startup</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
           <li><a href="https://github.com/rfk/arewepythonyet">Code</a></li>
           <li><a href="http://pypyjs.org/">PyPy.js</a></li>
         </ul>
@@ -38,15 +42,10 @@
       <div class="col-lg-4">
         <h2>Performance</h2>
         <p>Here's a litte blurb about these results, how we measure them, what they mean, blah blah.</p>
+        <div id="legend"></div>
       </div>
-      <div class="col-lg-8">
-        <div class="row">
-          <div class="col-lg-12 col-graph" id="graph-py-bars"></div>
-        </div>
-        <div class="row">
-          <div class="col-lg-12 col-graph" id="graph-py-line"></div>
-        </div>
-      </div>
+      <div class="col-lg-4 col-graph" id="graph-py-bars"></div>
+      <div class="col-lg-4 col-graph" id="graph-py-line"></div>
     </div>
 
     <div class="row">
@@ -56,6 +55,15 @@
       </div>
       <div class="col-lg-4 col-graph" id="graph-file-size"></div>
       <div class="col-lg-4 col-graph" id="graph-load-time"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <h2>PyStone</h2>
+        <p>Because this is the benchmark that started it all...</p>
+      </div>
+      <div class="col-lg-4 col-graph" id="graph-pystone-mean"></div>
+      <div class="col-lg-4 col-graph" id="graph-pystone-seq"></div>
     </div>
 
   </div>

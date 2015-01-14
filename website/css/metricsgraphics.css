@@ -44,9 +44,9 @@
 }
 
 .mg-baselines line {
-    opacity: 0.2;
+    opacity: 1;
     shape-rendering: crispEdges;
-    stroke: black;
+    stroke: #ccc;
     stroke-width: 1;
 }
 
@@ -132,11 +132,11 @@
 }
 
 .mg-y-axis line.mg-extended-y-ticks {
-    opacity: 0.07;
+    opacity: 0.4;
 }
 
 .mg-x-axis line.mg-extended-x-ticks {
-    opacity: 0.1;
+    opacity: 0.4;
 }
 
 .mg-histogram .axis path,
@@ -212,9 +212,9 @@
 }
 
 .mg-markers line {
-    opacity: 0.2;
+    opacity: 1;
     shape-rendering: crispEdges;
-    stroke: black;
+    stroke: #ccc;
     stroke-width: 1;
 }
 
@@ -223,10 +223,6 @@
     font-size: 0.7rem;
     opacity: 0.5;
     stroke: none;
-}
-
-.mg-missing-pane {
-    fill: none;
 }
 
 .mg-missing-text {
@@ -280,9 +276,9 @@ circle.mg-points-mono {
 
 .mg-x-axis line,
 .mg-y-axis line {
-    opacity: 0.3;
+    opacity: 1;
     shape-rendering: crispEdges;
-    stroke: black;
+    stroke: #ccc;
     stroke-width: 1;
 }
 
@@ -320,9 +316,9 @@ circle.mg-points-mono {
 }
 
 .mg-year-marker line {
-    opacity: 0.2;
+    opacity: 1;
     shape-rendering: crispEdges;
-    stroke: black;
+    stroke: #ccc;
     stroke-width: 1;
 }
 
