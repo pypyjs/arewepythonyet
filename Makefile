@@ -29,11 +29,11 @@ bench: $(VENV)/COMPLETE
 update: ./build/pypyjs/$(GITREFS)/master ./build/cpython/$(GITREFS)/2.7 \
         ./build/gecko-dev/$(GITREFS)/master ./build/v8/$(GITREFS)/master \
         ./build/depot_tools/$(GITREFS)/master
-	cd ./build/pypyjs && git pull
+	cd ./build/pypyjs && git pull && git submodule update
 	cd ./build/cpython && git pull
 	cd ./build/gecko-dev && git pull
 	cd ./build/depot_tools && git pull
-	cd ./build/v8 && git pull
+	cd ./build/v8 && git checkout master && git pull
 	docker pull rfkelly/pypyjs-build
 
 
@@ -63,9 +63,10 @@ clobber:
 	cd ./build/cpython && git checkout -t origin/2.7
 
 
-./build/v8/$(GITREFS)/master:
+./build/v8/$(GITREFS)/master: ./build/depot_tools/$(GITREFS)/master
 	mkdir -p ./build/bin
-	git clone https://github.com/v8/v8-git-mirror ./build/v8
+	cd ./build && PATH=./depot_tools/:$$PATH fetch v8
+	cd ./build/v8 && git checkout master
 
 
 ./build/gecko-dev/$(GITREFS)/master:
@@ -81,6 +82,7 @@ clobber:
 
 ./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master
 	mkdir -p ./build/lib
+	rm -rf ./build/lib/pypy
 	cd ./build/pypyjs && make release
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypy.js-*.tar.gz 
 	cd ./build/lib && mv pypy.js-* pypy
@@ -88,6 +90,7 @@ clobber:
 
 ./build/lib/pypy-nojit/package.json: ./build/pypyjs/$(GITREFS)/master
 	mkdir -p ./build/lib
+	rm -rf ./build/lib/pypy-nojit
 	cd ./build/pypyjs && make release-nojit
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypy-nojit.js-*.tar.gz 
 	cd ./build/lib && mv pypy-nojit.js-* pypy-nojit
@@ -120,7 +123,7 @@ clobber:
 
 ./build/bin/d8: ./build/v8/$(GITREFS)/master \
                 ./build/depot_tools/$(GITREFS)/master
-	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make dependencies || true
+	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" gclient sync
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make x64.release
 	ln -fs ../v8/out/x64.release/d8 ./build/bin/d8
 
