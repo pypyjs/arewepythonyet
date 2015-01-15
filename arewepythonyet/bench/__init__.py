@@ -21,8 +21,10 @@ import math
 import uuid
 import psutil
 import hashlib
-import tempfile
 import operator
+import tempfile
+import threading
+import traceback
 import contextlib
 import subprocess
 from datetime import datetime
@@ -99,23 +101,37 @@ class BenchEnvironment(object):
             my_cmd = self.abspath("build", "bin", cmd[0])
             if os.path.exists(my_cmd):
                 cmd[0] = my_cmd
+
+        timeout = kwds.pop("timeout", None)
+        event = threading.Event()
+        result = [None, None]
         p = subprocess.Popen(cmd, **kwds)
-        p.wait()
-        if p.returncode != 0:
-            raise subprocess.CalledProcessError(p.returncode, cmd)
+
+        def do_communicate():
+            try:
+                output = p.communicate()
+                if p.returncode != 0:
+                    raise subprocess.CalledProcessError(p.returncode, cmd)
+            except BaseException:
+                result[1] = sys.exc_info()
+            else:
+                result[0] = output
+            finally:
+                event.set()
+
+        thread = threading.Thread(target=do_communicate)
+        thread.start()
+        if not event.wait(timeout):
+            p.terminate()
+        thread.join()
+
+        if result[1] is not None:
+            raise result[1][0], result[1][1], result[1][2]
+        return result[0]
 
     def bt(self, cmd, **kwds):
-        if isinstance(cmd, basestring):
-            cmd = [cmd]
-        if cmd[0][0] not in ("/", "."):
-            my_cmd = self.abspath("build", "bin", cmd[0])
-            if os.path.exists(my_cmd):
-                cmd[0] = my_cmd
         kwds.setdefault("stdout", subprocess.PIPE)
-        p = subprocess.Popen(cmd, **kwds)
-        stdout, _ = p.communicate()
-        if p.returncode != 0:
-            raise subprocess.CalledProcessError(p.returncode, cmd)
+        stdout, _ = self.do(cmd, **kwds)
         return stdout
 
     def get_build_details(self):
@@ -254,9 +270,14 @@ class BenchEnvironment(object):
             if not isinstance(engine, JSEngine):
                 continue
             print "Measuring {} on {}".format(b_name, engine.name)
-            results[engine.name] = list(
-                engine.run_js_benchmark(js_file) for _ in xrange(self.num_runs)
-            )
+            try:
+                N = self.num_runs
+                res = list(engine.run_js_benchmark(js_file) for _ in xrange(N))
+            except Exception:
+                traceback.print_exc()
+                print "Failed {} on {}".format(b_name, engine.name)
+                res = None
+            results[engine.name] = res
         return results
 
     def _run_py_benchmark(self, name):
@@ -272,14 +293,21 @@ class BenchEnvironment(object):
         b_name = name.rsplit("/", 1)[-1]
         for engine in self.engines:
             print "Measuring {} on {}".format(b_name, engine.name)
-            results[engine.name] = list(
-                engine.run_py_benchmark(py_file) for _ in xrange(self.num_runs)
-            )
+            try:
+                N = self.num_runs
+                res = list(engine.run_py_benchmark(py_file) for _ in xrange(N))
+            except Exception:
+                traceback.print_exc()
+                print "Failed {} on {}".format(b_name, engine.name)
+                res = None
+            results[engine.name] = res
         return results
 
 
 
 class Engine(object):
+
+    TIMEOUT = 10 * 60  # timeout bench runs after 10 minutes
 
     def __init__(self, benv, name):
         self.benv = benv
@@ -306,7 +334,7 @@ class NativeEngine(Engine):
 
     def run_py_benchmark(self, filename):
         cmd = [self.py_shell, filename]
-        output = self.benv.bt(cmd).strip()
+        output = self.benv.bt(cmd, timeout=self.TIMEOUT).strip()
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
         return [float(res.strip()) for res in output.split()]
@@ -332,7 +360,7 @@ class JSEngine(Engine):
     def run_js_benchmark(self, filename):
         with self._templated_file(filename) as t_filename:
             cmd = [self.js_shell, t_filename]
-            output = self.benv.bt(cmd).strip()
+            output = self.benv.bt(cmd, timeout=self.TIMEOUT).strip()
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
         return [float(res.strip()) for res in output.split()]
@@ -360,7 +388,7 @@ class JSEngine(Engine):
         runner = self.benv.benchpath("b_py", "runner.js")
         with self._templated_file(runner, **kwds) as t_filename:
             cmd = [self.js_shell, t_filename]
-            output = self.benv.bt(cmd).strip()
+            output = self.benv.bt(cmd, timeout=self.TIMEOUT).strip()
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
         try:
