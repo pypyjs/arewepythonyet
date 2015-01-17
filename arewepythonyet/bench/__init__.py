@@ -17,11 +17,9 @@ a sequence of individual timing results.
 import os
 import sys
 import json
-import math
 import uuid
 import psutil
 import hashlib
-import operator
 import tempfile
 import threading
 import traceback
@@ -62,10 +60,6 @@ def get_machine_details():
     fingerprint = hashlib.sha256(fingerprint).hexdigest()[:16]
     details["fingerprint"] = fingerprint
     return details
-
-
-def geometric_mean(results):
-    return math.pow(reduce(operator.mul, results, 1), 1.0 / len(results))
 
 
 class BenchEnvironment(object):

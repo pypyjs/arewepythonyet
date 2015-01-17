@@ -22,7 +22,12 @@ build: \
 
 .PHONY: bench
 bench: $(VENV)/COMPLETE
-	PYTHONPATH=$(CURDIR) $(VENV)/bin/python -m arewepythonyet ./
+	PYTHONPATH=$(CURDIR) $(VENV)/bin/python -m arewepythonyet bench ./
+
+
+.PHONY: summary
+summary: $(VENV)/COMPLETE
+	PYTHONPATH=$(CURDIR) $(VENV)/bin/python -m arewepythonyet summarize ./
 
 
 .PHONY: update
