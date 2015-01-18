@@ -29,7 +29,6 @@
         <ul class="nav navbar-nav">
           <li><a href="/index.html">Overview</a></li>
           <li><a href="/performance.html">Performance</a></li>
-          <li><a href="/startup.html">Startup</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/about.html">About</a></li>
@@ -48,7 +47,7 @@
         <p>Normalize to: &nbsp;&nbsp;<select id="config-py-norm"><option>cpython</option><option>pypy</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-py-jit"><option>on</option><option>off</option></select></p>
         <p>Average performance across JavaScript engines and across Python benchmarks is:</p>
-        <div id="compare-py-trend">X times slower than cpython</div>
+        <div class="awpy-comparison-summary" id="compare-py-trend">X times slower than cpython</div>
       </div>
       <div class="col-lg-4 col-graph" id="graph-py-breakdown"></div>
       <div class="col-lg-4 col-graph">
