@@ -10,3 +10,12 @@
   text-align: center;
 }
 
+.awpy-row-graph {
+  padding: 1.2em;
+  border-bottom: 1px dotted grey;
+}
+
+.awpy-row-footer {
+  padding: 1.2em;
+  text-align: center;
+}

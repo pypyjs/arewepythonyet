@@ -64,6 +64,7 @@ def do_summarize(root_dir):
     summary = {
         "timestamp": results[-1]["timestamp"],
         "machine": results[-1]["machine_details"]["fingerprint"],
+        "platform": results[-1]["machine_details"]["platform"],
     }
     # For each py benchmark, take the min, max, and best arithmetic mean
     # across all available runs.  Combine them into a single summary using
@@ -79,6 +80,7 @@ def do_summarize(root_dir):
             b_summary = {
                 "timestamp": res["timestamp"],
                 "machine": res["machine_details"]["fingerprint"],
+                "platform": results[-1]["machine_details"]["platform"],
                 "engines": {},
             }
             for e_name in res_benchmarks[b_name]:
@@ -109,6 +111,7 @@ def do_summarize(root_dir):
         py_mean_series.append({
             "timestamp": res["timestamp"],
             "machine": res["machine_details"]["fingerprint"],
+            "platform": results[-1]["machine_details"]["platform"],
             "engines": res_means,
         })
     # Include the latest results in the summary data.
@@ -138,6 +141,7 @@ def do_summarize(root_dir):
             b_summary = {
                 "timestamp": res["timestamp"],
                 "machine": res["machine_details"]["fingerprint"],
+                "platform": results[-1]["machine_details"]["platform"],
                 "engines": {},
             }
             for e_name in res_misc[b_name]:

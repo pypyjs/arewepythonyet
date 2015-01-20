@@ -24,6 +24,7 @@
                 }
             }, 
             "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
             "timestamp": "20150120021450"
         }, 
         {
@@ -50,6 +51,7 @@
                 }
             }, 
             "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
             "timestamp": "20150115044117"
         }, 
         {
@@ -76,6 +78,7 @@
                 }
             }, 
             "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
             "timestamp": "20150113203542"
         }
     ]

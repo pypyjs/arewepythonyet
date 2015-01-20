@@ -40,7 +40,7 @@
 
   <div class='container'>
 
-    <div class="row">
+    <div class="row awpy-row-graph">
       <div class="col-lg-4">
         <h2>Performance</h2>
         <p>Performance on a selection of Python benchmarks, normalized to that of a native Python interpreter.  Smaller numbers are better.</p>
@@ -49,27 +49,31 @@
         <p>Average performance across JavaScript engines and across Python benchmarks is:</p>
         <div class="awpy-comparison-summary" id="compare-py-trend">X times slower than cpython</div>
       </div>
-      <div class="col-lg-4 col-graph" id="graph-py-breakdown"></div>
-      <div class="col-lg-4 col-graph">
+      <div class="col-lg-4 awpy-col-graph" id="graph-py-breakdown"></div>
+      <div class="col-lg-4 awpy-col-graph">
         <div class="awpy-graph" id="graph-py-trend"></div>
         <div class="awpy-legend" id="legend-py-trend"></div>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row awpy-row-graph">
       <div class="col-lg-4">
         <h2>Startup Overhead</h2>
         <p>Overhead involved in downloading the core interpreter files and loading them up into a running VM.  Smaller numbers are better.</p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-startup-jit"><option>on</option><option>off</option></select></p>
       </div>
-      <div class="col-lg-4 col-graph">
+      <div class="col-lg-4 awpy-col-graph">
         <div class="awpy-graph" id="graph-file-size"></div>
         <div class="awpy-legend" id="legend-file-size"></div>
       </div>
-      <div class="col-lg-4 col-graph">
+      <div class="col-lg-4 awpy-col-graph">
         <div class="awpy-graph" id="graph-load-time"></div>
         <div class="awpy-legend" id="legend-load-time"></div>
       </div>
+    </div>
+
+    <div class="row awpy-row-footer">
+      some sort of copyright info thing here
     </div>
 
   </div>

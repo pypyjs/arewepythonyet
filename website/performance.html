@@ -40,24 +40,27 @@
 
   <div class='container'>
 
-    <div class="row">
+    <div class="row awpy-row-graph">
       <div class="col-lg-4">
-        <h2>Individual Benchmarks</h2>
+        <h2>Current Benchmarks</h2>
         <p>Performance on a selection of Python benchmarks, normalized to that of a native Python interpreter.  Smaller numbers are better.</p>
-        <p>Compare: &nbsp;&nbsp;<select id="config-breakdown-compare"><option>all</option><option>js+pypy</option><option>d8+pypy</option></select></p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-breakdown-show-js" /> js <input type="checkbox" id="config-breakdown-show-d8" /> d8 <input type="checkbox" id="config-breakdown-show-native" /> native</p>
         <p>Normalized to: &nbsp;&nbsp;<select id="config-breakdown-norm"><option>cpython</option><option>pypy</option></select></p>
+        <p>Bench Metric: &nbsp;&nbsp;<select id="config-breakdown-metric"><option>mean</option><option>min</option><option>max</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-breakdown-jit"><option>on</option><option>off</option></select></p>
         <p>Average performance across Python benchmarks is:</p>
         <div class="awpy-comparison-summary" id="compare-breakdown-mean">X times slower than cpython</div>
       </div>
-      <div class="col-lg-8 col-graph" id="graph-py-breakdown"></div>
+      <div class="col-lg-8 awpy-col-graph" id="graph-py-breakdown"></div>
     </div>
 
-    <div class="row">
+    <div class="row awpy-row-graph">
       <div class="col-lg-4">
-        <h2>Mean Performance Trend</h2>
+        <h2>Performance Trend</h2>
         <p>Mean performance across all python benchmarks, normalized to that of a native python interpreter, over time.  Smaller numbers are better.</p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-trend-show-js" /> js <input type="checkbox" id="config-trend-show-d8" /> d8 <input type="checkbox" id="config-trend-show-native" /> native</p>
         <p>Normalized to: &nbsp;&nbsp;<select id="config-trend-norm"><option>cpython</option><option>pypy</option></select></p>
+        <p>Bench Metric: &nbsp;&nbsp;<select id="config-trend-metric"><option>mean</option><option>min</option><option>max</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-trend-jit"><option>on</option><option>off</option></select></p>
       </div>
       <div class="col-lg-8 col-graph">
@@ -66,20 +69,42 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row awpy-row-graph">
       <div class="col-lg-4">
-        <h2>Benchmark Details</h2>
-        <p>Detailed information for a particular benchmark.  Smaller numbers are better.</p>
-        <p>Benchmark: &nbsp;&nbsp;<select id="config-detail-benchmark"><option>chaos</option><option>fannkuch</option><option>richards</option></select></p>
-        <p>Engines: &nbsp;&nbsp;<input type="checkbox" id="detail-cpython" />cpython <input type="checkbox" id="detail-pypy" />pypy <input type="checkbox" id="detail-js+pypy" />js+pypy <input type="checkbox" id="detail-d8+pypy">d8+pypy</p>
-        <p>With JIT: &nbsp;&nbsp;<select id="config-trend-jit"><option>on</option><option>off</option></select></p>
+        <h2>Individual Trend</h2>
+        <p>Performance on a particular python benchmarks, normalized to that of a native python interpreter, over time.  Smaller numbers are better.</p>
+        <p>Benchmark: &nbsp;&nbsp;<select id="config-itrend-benchmark"></select></p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-itrend-show-js" /> js <input type="checkbox" id="config-itrend-show-d8" /> d8 <input type="checkbox" id="config-itrend-show-native" /> native</p>
+        <p>Normalized to: &nbsp;&nbsp;<select id="config-itrend-norm"><option>cpython</option><option>pypy</option></select></p>
+        <p>Bench Metric: &nbsp;&nbsp;<select id="config-itrend-metric"><option>mean</option><option>min</option><option>max</option></select></p>
+        <p>With JIT: &nbsp;&nbsp;<select id="config-itrend-jit"><option>on</option><option>off</option></select></p>
         <p>
       </div>
       <div class="col-lg-8 col-graph">
-        <div class="awpy-graph" id="graph-trend"></div>
-        <div class="awpy-legend" id="legend-trend"></div>
+        <div class="awpy-graph" id="graph-detail-trend"></div>
+        <div class="awpy-legend" id="legend-detail-trend"></div>
       </div>
     </div>
+
+    <div class="row awpy-row-graph">
+      <div class="col-lg-4">
+        <h2>Benchmark Run Detail</h2>
+        <p>Detailed information for a single run of a particular benchmark.  Smaller numbers are better.</p>
+        <p>Benchmark: &nbsp;&nbsp;<select id="config-detail-benchmark"></select></p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-detail-show-js" /> js <input type="checkbox" id="config-detail-show-d8" /> d8 <input type="checkbox" id="config-detail-show-native" /> native</p>
+        <p>With JIT: &nbsp;&nbsp;<select id="config-detail-jit"><option>on</option><option>off</option></select></p>
+        <p>
+      </div>
+      <div class="col-lg-8 col-graph">
+        <div class="awpy-graph" id="graph-detail-run"></div>
+        <div class="awpy-legend" id="legend-detail-run"></div>
+      </div>
+    </div>
+
+
+    <div class="row awpy-row-footer">
+      some sort of copyright info thing here
+    </div> 
 
   </div>
 

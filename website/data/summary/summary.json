@@ -16,6 +16,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150113203542"
             }, 
             "file_size_raw": {
@@ -32,6 +33,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150113203542"
             }, 
             "load_time": {
@@ -58,6 +60,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150113203542"
             }, 
             "pystone": {
@@ -99,10 +102,12 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150113203542"
             }
         }
     }, 
+    "platform": "darwin", 
     "py": {
         "benchmarks": {
             "chaos": {
@@ -144,6 +149,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "fannkuch": {
@@ -185,6 +191,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "float": {
@@ -226,6 +233,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "meteor-contest": {
@@ -267,6 +275,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "nbody_modified": {
@@ -308,6 +317,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "nqueens": {
@@ -349,6 +359,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "richards": {
@@ -390,6 +401,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }, 
             "spectral-norm": {
@@ -431,6 +443,7 @@
                     }
                 }, 
                 "machine": "922174a8388e0a2f", 
+                "platform": "darwin", 
                 "timestamp": "20150120021450"
             }
         }, 
@@ -473,6 +486,7 @@
                 }
             }, 
             "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
             "timestamp": "20150120021450"
         }
     }, 

@@ -24,7 +24,11 @@ AWPY.fetch = function(name) {
 AWPY.convert_timestamps = function convert_timestamps(data) {
   for (var k in data) {
     if (data[k] instanceof Array) {
-      MG.convert.date(data[k], "timestamp", "%Y%m%d%H%M%S");
+      if (data[k].length > 0) {
+        if (typeof data[k][0].timestamp !== "undefined") {
+          MG.convert.date(data[k], "timestamp", "%Y%m%d%H%M%S");
+        }
+      }
     } else if (data[k] instanceof Object) {
       convert_timestamps(data[k]);
     }
@@ -64,20 +68,40 @@ AWPY.config_options = {};
 AWPY.ConfigOption = function ConfigOption(name, options) {
   AWPY.config_options[name] = this;
   this.name = name;
-  this.options = options;
+  this.options = options || {};
   this.widgets = [];
   this.value = AWPY.from_location_var(name);
   if (typeof this.value === "undefined") {
-    this.value = options.default;
+    this.value = this.options.default;
   }
 };
 
 AWPY.ConfigOption.prototype.add_widget = function add_widget(target) {
   this.widgets.push(target);
-  $(target).val(this.value);
+  this._set_widget(target, this.value);
   $(target).on("change", (function() {
-    this.set($(target).val())
+    var $w = $(target);
+    var val;
+    if ($w.attr("type") === "checkbox") {
+      val = $w.get(0).checked ? "on" : "off";
+    } else {
+      val = $w.val();
+    }
+    this.set(val)
   }).bind(this));
+}
+
+AWPY.ConfigOption.prototype._set_widget = function _set_widget(widget, val) {
+  var $w = $(widget);
+  if ($w.attr("type") === "checkbox") {
+    if (val === "on") {
+      $w.get(0).checked = true;
+    } else {
+      $w.get(0).checked = false;
+    }
+  } else {
+    $w.val(val)
+  }
 }
 
 AWPY.ConfigOption.prototype.get = function get() {
@@ -88,7 +112,7 @@ AWPY.ConfigOption.prototype.set = function set(val) {
   this.value = val;
   AWPY.to_location_var(this.name, val);
   for (var i = 0; i < this.widgets.length; i++) {
-    $(this.widgets[i]).val(val)
+    this._set_widget(this.widgets[i], val);
   }
   AWPY.draw_all_the_graphs();
 }

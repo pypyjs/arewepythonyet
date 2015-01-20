@@ -80,14 +80,17 @@ $(document).ready(function() {
           product = product * b_value;
         }
         var geo_mean = Math.pow(product, 1 / data.length);
-        var txt;
-        if (geo_mean >= 1) {
-          txt = Math.round(geo_mean * 10) / 10;
-          txt += " times slower than " + norm;
+        var txt = "approximately ";
+        if (geo_mean > 1.05) {
+          txt += Math.round(geo_mean * 10) / 10;
+          txt += " times slower than";
+        } else if (geo_mean < 0.95) {
+          txt += Math.round((1 / geo_mean) * 10) / 10;
+          txt += " times faster than";
         } else {
-          txt = Math.round((1 / geo_mean) * 10) / 10;
-          txt += " times faster than " + norm;
+          txt += "the same as";
         }
+        txt += " " + norm;
         $("#compare-py-trend").text(txt);
         return data;
       }).bind(this))
@@ -98,10 +101,6 @@ $(document).ready(function() {
 
   var pyBenchMeanTrend = new AWPY.Graph({
     title: "Mean performance over time",
-    config: {
-      norm: "cpython",
-      jit: true
-    },
     description: function() {
       desc = "Mean time across all benchmarks, over time, ";
       desc += "normalized to " + cfg_norm_jit();
