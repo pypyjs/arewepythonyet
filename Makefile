@@ -70,7 +70,7 @@ clobber:
 
 ./build/v8/$(GITREFS)/master: ./build/depot_tools/$(GITREFS)/master
 	mkdir -p ./build/bin
-	cd ./build && PATH=./depot_tools/:$$PATH fetch v8
+	if [ ! -d ./build/v8 ] ; then cd ./build && PATH=./depot_tools/:$$PATH fetch v8; fi
 	cd ./build/v8 && git checkout master
 
 
@@ -84,7 +84,7 @@ clobber:
 	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git ./build/depot_tools
 
 
-
+# XXX TODO: this should depend on the version of docker build image somehow..
 ./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy

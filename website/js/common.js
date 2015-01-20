@@ -32,18 +32,6 @@ AWPY.convert_timestamps = function convert_timestamps(data) {
 }
 
 
-AWPY.all_graphs = [];
-
-AWPY.draw_all_the_graphs = function draw_all_the_graphs() {
-  var p = Promise.resolve();
-  for (var i = 0; i < AWPY.all_graphs.length; i++) {
-    p = p.then((function(i) { return function() {
-      return AWPY.all_graphs[i].draw();
-    };})(i));
-  }
-}
-
-
 AWPY.from_location_var = function from_location_var(name) {
   var r = new RegExp("(#|&)" + name + "=([a-zA-Z0-9_\\-\\+]+)($|&)");
   var match = r.exec(window.location.hash);
@@ -65,6 +53,55 @@ AWPY.to_location_var = function to_location_var(name, value) {
     var prefix = hash.substr(0, match.index + 1);
     var suffix = hash.substr(match.index + match[0].length - match[3].length);
     window.location.hash = prefix + name + "=" + value + suffix;
+  }
+}
+
+
+AWPY.config = {};
+
+AWPY.config_options = {};
+
+AWPY.ConfigOption = function ConfigOption(name, options) {
+  AWPY.config_options[name] = this;
+  this.name = name;
+  this.options = options;
+  this.widgets = [];
+  this.value = AWPY.from_location_var(name);
+  if (typeof this.value === "undefined") {
+    this.value = options.default;
+  }
+};
+
+AWPY.ConfigOption.prototype.add_widget = function add_widget(target) {
+  this.widgets.push(target);
+  $(target).val(this.value);
+  $(target).on("change", (function() {
+    this.set($(target).val())
+  }).bind(this));
+}
+
+AWPY.ConfigOption.prototype.get = function get() {
+  return this.value;
+}
+
+AWPY.ConfigOption.prototype.set = function set(val) {
+  this.value = val;
+  AWPY.to_location_var(this.name, val);
+  for (var i = 0; i < this.widgets.length; i++) {
+    $(this.widgets[i]).val(val)
+  }
+  AWPY.draw_all_the_graphs();
+}
+
+
+AWPY.all_graphs = [];
+
+AWPY.draw_all_the_graphs = function draw_all_the_graphs() {
+  var p = Promise.resolve();
+  for (var i = 0; i < AWPY.all_graphs.length; i++) {
+    p = p.then((function(i) { return function() {
+      return AWPY.all_graphs[i].draw();
+    };})(i));
   }
 }
 

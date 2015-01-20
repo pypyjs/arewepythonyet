@@ -267,6 +267,10 @@ class BenchEnvironment(object):
             try:
                 N = self.num_runs
                 res = list(engine.run_js_benchmark(js_file) for _ in xrange(N))
+                for run in res:
+                    for run_t in run:
+                        if run_t <= 0:
+                            raise ValueError("Negative benchmark time")
             except Exception:
                 traceback.print_exc()
                 print "Failed {} on {}".format(b_name, engine.name)
@@ -290,6 +294,10 @@ class BenchEnvironment(object):
             try:
                 N = self.num_runs
                 res = list(engine.run_py_benchmark(py_file) for _ in xrange(N))
+                for run in res:
+                    for run_t in run:
+                        if run_t <= 0:
+                            raise ValueError("Negative benchmark time")
             except Exception:
                 traceback.print_exc()
                 print "Failed {} on {}".format(b_name, engine.name)

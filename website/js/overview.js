@@ -1,29 +1,32 @@
 $(document).ready(function() {
 
-  // The latest results of the python benchmarks, normalized to native.
+  // There are two configuration options for this page.
+  //   norm: what native interpreter to normalize to
+  //   jit:  whether to compare pypy with or without JIT
 
-  function cfg_norm(val) {
-    if (typeof val !== "undefined") {
-      $("#config-py-norm").val(val);
-      $("#config-py-norm").trigger("change");
-    }
-    var norm = $("#config-py-norm").val();
-    if (norm === "pypy" && !cfg_jit()) {
-      norm = "pypy-nojit";
-    }
-    return norm;
-  }
+  var cfg_norm = new AWPY.ConfigOption("norm", {
+    default: "cpython"
+  });
+  cfg_norm.add_widget("#config-py-norm");
 
-  function cfg_jit(val) {
-    if (typeof val !== "undefined") {
-      $("#config-py-jit").val(val ? "on" : "off");
-      $("#config-py-jit").trigger("change");
+  var cfg_jit = new AWPY.ConfigOption("jit", {
+    default: "on"
+  });
+  cfg_jit.add_widget("#config-py-jit");
+  cfg_jit.add_widget("#config-startup-jit");
+
+  // Helper functions for selecting engines based on
+  // the config settings.
+
+  function cfg_norm_jit() {
+    if (cfg_norm.value === "pypy" && cfg_jit.value !== "on") {
+      return "pypy-nojit";
     }
-    return $("#config-py-jit").val() === "on";
+    return cfg_norm.value;
   }
 
   function cfg_js_engines() {
-    if (cfg_jit()) {
+    if (cfg_jit.value === "on") {
       js_engines = ["js+pypy", "d8+pypy"];
     } else {
       js_engines = ["js+pypy-nojit", "d8+pypy-nojit"];
@@ -31,11 +34,14 @@ $(document).ready(function() {
     return js_engines;
   }
 
+  // Bar graph showing current status of each python benchmark,
+  // normalized to the selected native python interpreter.
+
   var pyBenchBreakdown = new AWPY.Graph({
     title: "Individual benchmarks",
     description: function() {
       desc = "Mean time for each python benchmark,";
-      desc += " normalized to " + cfg_norm();
+      desc += " normalized to " + cfg_norm_jit();
       return desc
     },
     chart_type: "bar",
@@ -43,27 +49,27 @@ $(document).ready(function() {
     x_accessor: "value",
     y_accessor: "label",
     x_label: function() {
-      return "runtime (normalized to " + cfg_norm() + ")";
+      return "runtime (normalized to " + cfg_norm_jit() + ")";
     },
     baseline_accessor: "baseline",
     data: function() {
-      return AWPY.fetch("data/summary.json").then((function(summary) {
+      return AWPY.fetch("data/summary/summary.json").then((function(summary) {
         var data = [];
         var product = 1;
-        var norm = cfg_norm();
+        var norm = cfg_norm_jit();
         var js_engines = cfg_js_engines();
         BENCHMARKS: for (var b_name in summary.py.benchmarks) {
           var b_res = summary.py.benchmarks[b_name];
-          if (!b_res[0].engines[norm]) continue;
+          if (!b_res.engines[norm]) continue;
           for (var i = 0; i < js_engines.length; i++) {
-            if (!b_res[0].engines[js_engines[i]]) {
+            if (!b_res.engines[js_engines[i]]) {
               continue BENCHMARKS;
             }
           }
-          var b_norm = b_res[0].engines[norm].mean;
+          var b_norm = b_res.engines[norm].mean;
           var b_value = 0;
           for (var i = 0; i < js_engines.length; i++) {
-            b_value += b_res[0].engines[js_engines[i]].mean;
+            b_value += b_res.engines[js_engines[i]].mean;
           }
           b_value = (b_value / js_engines.length) / b_norm;
           data.push({
@@ -98,14 +104,14 @@ $(document).ready(function() {
     },
     description: function() {
       desc = "Mean time across all benchmarks, over time, ";
-      desc += "normalized to " + cfg_norm();
+      desc += "normalized to " + cfg_norm_jit();
       return desc
     },
     legend: function() {
-      if (cfg_jit()) {
-        return [cfg_norm(), "js+pypy", "d8+pypy"];
+      if (cfg_jit.value === "on") {
+        return [cfg_norm_jit(), "js+pypy", "d8+pypy"];
       } else {
-        return [cfg_norm(), "js+pypy-nojit", "d8+pypy-nojit"];
+        return [cfg_norm_jit(), "js+pypy-nojit", "d8+pypy-nojit"];
       }
     },
     target: "#graph-py-trend",
@@ -113,15 +119,15 @@ $(document).ready(function() {
     x_accessor: "timestamp",
     y_accessor: "value",
     y_label: function() {
-      return "runtime (normalized to " + cfg_norm() + ")";
+      return "runtime (normalized to " + cfg_norm_jit() + ")";
     },
     data: function() {
-      return AWPY.fetch("data/summary.json").then((function(summary) {
-        var norm = cfg_norm();
-        var b_means = summary.py.geometric_mean;
+      return AWPY.fetch("data/summary/py/geometric_mean.json").then((function(data) {
+        var norm = cfg_norm_jit();
+        var b_means = data.values;
         var b_means_norm = {};
         for (var i = b_means.length - 1; i >= 0; i--) {
-          var b_norm = b_means[i].engines[norm].value;
+          var b_norm = b_means[i].engines[norm].mean;
           for (var e_name in b_means[i].engines) {
             var e_means_norm = b_means_norm[e_name];
             if (!e_means_norm) {
@@ -129,34 +135,18 @@ $(document).ready(function() {
             }
             e_means_norm.push({
               timestamp: b_means[i].timestamp,
-              value: b_means[i].engines[e_name].value / b_norm
+              value: b_means[i].engines[e_name].mean / b_norm
             });
           }
         }
         return [
           b_means_norm[norm],
-          b_means_norm["js+pypy" + (cfg_jit() ? "" : "-nojit")],
-          b_means_norm["d8+pypy" + (cfg_jit() ? "" : "-nojit")]
+          b_means_norm["js+pypy" + (cfg_jit.value === "on" ? "" : "-nojit")],
+          b_means_norm["d8+pypy" + (cfg_jit.value === "on" ? "" : "-nojit")]
         ]
       }).bind(this));
     }
   });
-
-  $("#config-py-norm").on("change", function() {
-    AWPY.to_location_var("norm", cfg_norm());
-    pyBenchBreakdown.draw();
-    pyBenchMeanTrend.draw();
-  });
-
-  $("#config-py-jit").on("change", function() {
-    var val = cfg_jit() ? "on" : "off";
-    AWPY.to_location_var("jit", val);
-    if ($("#config-startup-jit").val() !== val) {
-      $("#config-startup-jit").val(val);
-    }
-    AWPY.draw_all_the_graphs();
-  });
-
 
   var miscDownloadSize = new AWPY.Graph({
     title: "Download Size",
@@ -168,25 +158,27 @@ $(document).ready(function() {
     legend: ["raw", "gz"],
     legend_target: "#legend-file-size",
     data: function() {
-      return AWPY.fetch("data/summary.json").then((function(summary) {
-        var data_raw = [];
-        var engine = "pypy" + (cfg_jit() ? "" : "-nojit");
-        var results = summary["misc"]["file_size_raw"];
-        for (var i = results.length - 1; i >= 0; i--) {
-          data_raw.push({
-            "timestamp": results[i]["timestamp"],
-            "value": results[i].engines[engine].mean,
-          });
-        }
-        var data_gz = [];
-        var results = summary["misc"]["file_size_gz"];
-        for (var i = results.length - 1; i >= 0; i--) {
-          data_gz.push({
-            "timestamp": results[i]["timestamp"],
-            "value": results[i].engines[engine].mean,
-          });
-        }
-        return [data_raw, data_gz];
+      return AWPY.fetch("data/summary/misc/benchmarks/file_size_raw.json").then((function(ts_raw) {
+        return AWPY.fetch("data/summary/misc/benchmarks/file_size_gz.json").then((function(ts_gz) {
+          var data_raw = [];
+          var engine = "pypy" + (cfg_jit.value === "on" ? "" : "-nojit");
+          var results = ts_raw["values"];
+          for (var i = results.length - 1; i >= 0; i--) {
+            data_raw.push({
+              "timestamp": results[i]["timestamp"],
+              "value": results[i].engines[engine].mean,
+            });
+          }
+          var data_gz = [];
+          var results = ts_gz["values"];
+          for (var i = results.length - 1; i >= 0; i--) {
+            data_gz.push({
+              "timestamp": results[i]["timestamp"],
+              "value": results[i].engines[engine].mean,
+            });
+          }
+          return [data_raw, data_gz];
+        }).bind(this));
       }).bind(this));
     }
   });
@@ -201,10 +193,10 @@ $(document).ready(function() {
     y_accessor: "value",
     y_label: "load time (seconds)",
     data: function() {
-      return AWPY.fetch("data/summary.json").then((function(summary) {
-        var engine = "pypy" + (cfg_jit() ? "" : "-nojit");
+      return AWPY.fetch("data/summary/misc/benchmarks/load_time.json").then((function(ts) {
+        var engine = "pypy" + (cfg_jit.value === "on" ? "" : "-nojit");
         var data_js = [];
-        var results = summary["misc"]["load_time"];
+        var results = ts["values"];
         for (var i = results.length - 1; i >= 0; i--) {
           data_js.push({
             "timestamp": results[i]["timestamp"],
@@ -212,7 +204,7 @@ $(document).ready(function() {
           });
         }
         var data_d8 = [];
-        var results = summary["misc"]["load_time"];
+        var results = ts["values"];
         for (var i = results.length - 1; i >= 0; i--) {
           data_d8.push({
             "timestamp": results[i]["timestamp"],
@@ -223,14 +215,6 @@ $(document).ready(function() {
       }).bind(this));
     }
   });
-
-  $("#config-startup-jit").on("change", function() {
-    $("#config-py-jit").val($(this).val());
-    $("#config-py-jit").trigger("change");
-  });
-
-  cfg_norm(AWPY.from_location_var("norm"));
-  cfg_jit(AWPY.from_location_var("jit") == "on" ? true : false);
 
   AWPY.draw_all_the_graphs();
 
