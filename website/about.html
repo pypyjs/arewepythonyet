@@ -42,35 +42,15 @@
   <div class='container'>
 
     <div class="row awpy-row-graph">
-      <div class="col-lg-4">
-        <!-- XXX TODO: ability to scroll to these anchors via hash fragment -->
-        <h2><a href="/performance.html" name="performance">Performance</a></h2>
-        <p>Performance on a selection of python benchmarks, normalized to that of a native python interpreter.  Smaller numbers are better.</p>
-        <p>Normalize to: &nbsp;&nbsp;<select id="config-py-norm"><option>cpython</option><option>pypy</option></select></p>
-        <p>With JIT: &nbsp;&nbsp;<select id="config-py-jit"><option>on</option><option>off</option></select></p>
-        <p>Average performance across javascript engines and across python benchmarks is:</p>
-        <div class="awpy-comparison-summary" id="compare-py-trend">X times slower than cpython</div>
-      </div>
-      <div class="col-lg-4 awpy-col-graph" id="graph-py-breakdown"></div>
-      <div class="col-lg-4 awpy-col-graph">
-        <div class="awpy-graph" id="graph-py-trend"></div>
-        <div class="awpy-legend" id="legend-py-trend"></div>
-      </div>
-    </div>
-
-    <div class="row awpy-row-graph">
-      <div class="col-lg-4">
-        <h2><a href="/startup.html" name="startup">Startup Overhead</a></h2>
-        <p>Overhead involved in downloading the core interpreter files and loading them up into a running VM.  Smaller numbers are better.</p>
-        <p>With JIT: &nbsp;&nbsp;<select id="config-startup-jit"><option>on</option><option>off</option></select></p>
-      </div>
-      <div class="col-lg-4 awpy-col-graph">
-        <div class="awpy-graph" id="graph-file-size"></div>
-        <div class="awpy-legend" id="legend-file-size"></div>
-      </div>
-      <div class="col-lg-4 awpy-col-graph">
-        <div class="awpy-graph" id="graph-load-time"></div>
-        <div class="awpy-legend" id="legend-load-time"></div>
+      <div class="col-lg-12">
+        <h1>Are we Python yet?</h1>
+        <p>No, not really &ndash; but we're working on it!</p>
+        <p>This site tracks performance metrics for <a href="http://pypyjs.org">PyPy.js</a>, an
+        in-browser version of the <a href="http://pypy.org">PyPy</a> python interpreter.</p>
+        <p>There is currently no permanent build infrastructure.  Benchmarks are run by hand and
+        results are stored in static json files for offline processing.  You can
+        <a href="https://github.com/rfk/arewepythonyet">grab the code from github</a> if you'd
+        like to run them locally.</p>
       </div>
     </div>
 

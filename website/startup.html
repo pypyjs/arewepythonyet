@@ -33,7 +33,7 @@
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/about.html">About</a></li>
-          <li><a href="http://pypyjs.org/">PyPy.js</a></li>
+          <li><a href="http://PyPy.js.org/">PyPy.js</a></li>
         </ul>
       </div>
     </div>
@@ -43,40 +43,42 @@
 
     <div class="row awpy-row-graph">
       <div class="col-lg-4">
-        <!-- XXX TODO: ability to scroll to these anchors via hash fragment -->
-        <h2><a href="/performance.html" name="performance">Performance</a></h2>
-        <p>Performance on a selection of python benchmarks, normalized to that of a native python interpreter.  Smaller numbers are better.</p>
-        <p>Normalize to: &nbsp;&nbsp;<select id="config-py-norm"><option>cpython</option><option>pypy</option></select></p>
-        <p>With JIT: &nbsp;&nbsp;<select id="config-py-jit"><option>on</option><option>off</option></select></p>
-        <p>Average performance across javascript engines and across python benchmarks is:</p>
-        <div class="awpy-comparison-summary" id="compare-py-trend">X times slower than cpython</div>
+        <h2><a name="filesize">Download Size</a></h2>
+        <p>The combined size of all files that must be downloaded to initialize the core PyPy.js VM, over time.  Smaller numbers are better.</p>
+        <p>With JIT: &nbsp;&nbsp;<select id="config-filesize-jit"><option>on</option><option>off</option></select></p>
       </div>
-      <div class="col-lg-4 awpy-col-graph" id="graph-py-breakdown"></div>
-      <div class="col-lg-4 awpy-col-graph">
-        <div class="awpy-graph" id="graph-py-trend"></div>
-        <div class="awpy-legend" id="legend-py-trend"></div>
+      <div class="col-lg-8 awpy-col-graph">
+        <div class="awpy-graph" id="graph-file-size"></div>
+        <div class="awpy-legend" id="legend-file-size"></div>
       </div>
     </div>
 
     <div class="row awpy-row-graph">
       <div class="col-lg-4">
-        <h2><a href="/startup.html" name="startup">Startup Overhead</a></h2>
-        <p>Overhead involved in downloading the core interpreter files and loading them up into a running VM.  Smaller numbers are better.</p>
-        <p>With JIT: &nbsp;&nbsp;<select id="config-startup-jit"><option>on</option><option>off</option></select></p>
+        <h2><a name="filesize">Load Time</a></h2>
+        <p>The time taken to load, parse and initialize the code and obtain a running PyPy.js VM, over time.  Smaller numbers are better.</p>
+        <p>With JIT: &nbsp;&nbsp;<select id="config-loadtime-jit"><option>on</option><option>off</option></select></p>
       </div>
-      <div class="col-lg-4 awpy-col-graph">
-        <div class="awpy-graph" id="graph-file-size"></div>
-        <div class="awpy-legend" id="legend-file-size"></div>
-      </div>
-      <div class="col-lg-4 awpy-col-graph">
+      <div class="col-lg-8 awpy-col-graph">
         <div class="awpy-graph" id="graph-load-time"></div>
         <div class="awpy-legend" id="legend-load-time"></div>
       </div>
     </div>
 
+    <div class="row awpy-row-graph">
+      <div class="col-lg-4">
+        <h2><a name="trend">Startup on This Machine</a></h2>
+        <p>The time taken to download and initialize a PyPy.js VM on this machine.</p>
+        <p>With JIT: &nbsp;&nbsp;<select id="config-local-jit"><option>on</option><option>off</option></select></p>
+      </div>
+      <div class="col-lg-8 col-graph">
+        <p>XXX TODO: code to perform this test at runtime; maybe in a worker?</p>
+      </div>
+    </div>
+
     <div class="row awpy-row-footer">
       some sort of copyright info thing here
-    </div>
+    </div> 
 
   </div>
 
@@ -88,7 +90,7 @@
   <script src='js/d3.min.js' charset='utf-8'></script>
   <script src='js/metricsgraphics.js'></script>
   <script src='js/common.js'></script>
-  <script src='js/overview.js'></script>
+  <script src='js/startup.js'></script>
 </body>
 
 </html>

@@ -97,12 +97,6 @@ $(document).ready(function() {
   // normalized to the selected native python interpreter.
 
   var pyBenchBreakdown = new AWPY.Graph({
-    title: "Individual benchmarks",
-    description: function() {
-      desc = "Mean time for each python benchmark,";
-      desc += " normalized to " + cfg_norm_jit();
-      return desc
-    },
     chart_type: "bar",
     bar_orientation: "vertical",
     target: "#graph-py-breakdown",
@@ -165,12 +159,6 @@ $(document).ready(function() {
   // Geometric mean of performance over time, normalized to native.
 
   var pyBenchMeanTrend = new AWPY.Graph({
-    title: "Mean performance over time",
-    description: function() {
-      desc = "Mean time across all benchmarks, over time, ";
-      desc += "normalized to " + cfg_norm_jit();
-      return desc
-    },
     legend: function() {
       var engines = cfg_engines();
       engines.unshift(cfg_norm_jit())
@@ -216,16 +204,6 @@ $(document).ready(function() {
   // This is good for seeing how the JIT kicks in over running time.
 
   var pyBenchRunDetail = new AWPY.Graph({
-    title: function () {
-       var title = "Performance of \"" + cfg_benchmark.value;
-       title += "\" during a single run";
-       return title;
-    },
-    description: function() {
-      desc = "Individual performance times for \"" + cfg_benchmark.value;
-      desc += "\" during a single run";
-      return desc
-    },
     legend: function() {
       var engines = cfg_engines();
       var norm = cfg_norm_jit();
@@ -275,16 +253,6 @@ $(document).ready(function() {
   // Graph of performance over time for a particular benchmark.
 
   var pyBenchTrendDetail = new AWPY.Graph({
-    title: function () {
-       var title = "Performance of \"" + cfg_benchmark.value;
-       title += "\" over time";
-       return title;
-    },
-    description: function() {
-      desc = "Mean time for \"" + cfg_benchmark.value + "\", over time, ";
-      desc += "normalized to " + cfg_norm_jit();
-      return desc
-    },
     legend: function() {
       var engines = cfg_engines();
       engines.unshift(cfg_norm_jit())
