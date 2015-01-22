@@ -154,19 +154,24 @@ AWPY.Graph.prototype.draw = function() {
     }
   }
   return p.then((function() {
+    var $t = $(opts.target);
     if (!opts.width) {
-      opts.width = $(opts.target).width();
+      opts.width = $t.width();
     }
     if (!opts.height) {
-      opts.height = 280;
-      // XXX TODO: make this work without constantly growing the size...
-      // var t_height = $(opts.target).parent().height();
-      // opts.height = t_height > 280 ? t_height : 250;
+      // Stretch to the height of non-graph columns of the containing row,
+      // or to a minimum of around 250.
+      var t_height = $t.closest(".row").children()
+                       .filter(":not(.awpy-col-graph)").height();
+      opts.height = t_height > 280 ? t_height : 250;
+    }
+    if (!opts.interpolate) {
+      opts.interpolate = "basic";
     }
     // Re-rendering bar charts doesn't seem to work quite right.
     // This forces it to re-draw from scratch.
     if (opts.chart_type === "bar") {
-      $(opts.target).empty();
+      $t.empty();
     }
     MG.data_graphic(opts);
   }).bind(this));
