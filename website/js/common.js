@@ -118,6 +118,17 @@ AWPY.ConfigOption.prototype.set = function set(val) {
 }
 
 
+AWPY.line_colours = {
+  "cpython": 4,
+  "pypy": 3,
+  "pypy-nojit": 3,
+  "js+pypy": 1,
+  "js+pypy-nojit": 2,
+  "d8+pypy": 2,
+  "d8+pypy-nojit": 2
+};
+
+
 AWPY.all_graphs = [];
 
 AWPY.draw_all_the_graphs = function draw_all_the_graphs() {
@@ -168,9 +179,22 @@ AWPY.Graph.prototype.draw = function() {
     if (!opts.interpolate) {
       opts.interpolate = "basic";
     }
+    if (!opts.custom_line_color_map && opts.legend) {
+      var line_colours = [];
+      for (var i = 0; i < opts.legend.length; i++) {
+        if (!AWPY.line_colours[opts.legend[i]]) {
+          line_colours = undefined;
+          break;
+        }
+        line_colours.push(AWPY.line_colours[opts.legend[i]]);
+      }
+      opts.custom_line_color_map = line_colours;
+    }
     // Re-rendering bar charts doesn't seem to work quite right.
     // This forces it to re-draw from scratch.
-    if (opts.chart_type === "bar") {
+    // XXX TODO: actually even line charts are buggy when using custom
+    // colour map, disable all for now...
+    if (opts.chart_type === "bar" || true) {
       $t.empty();
     }
     MG.data_graphic(opts);

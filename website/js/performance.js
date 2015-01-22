@@ -216,7 +216,7 @@ $(document).ready(function() {
     legend_target: "#legend-detail-run",
     x_accessor: "sequence",
     y_accessor: "value",
-    x_label: "sequence in run",
+    x_label: "iteration # in run",
     y_label: "runtime (seconds)",
     data: function() {
       var engines = this.options.legend();
@@ -237,7 +237,7 @@ $(document).ready(function() {
             } else {
               for (var i = 0; i < e_runs[e_name][0].length; i++) {
                 e_data.push({
-                  sequence: i,
+                  sequence: i + 1,
                   value: e_runs[e_name][0][i]
                 });
               }
