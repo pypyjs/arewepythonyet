@@ -4110,5 +4110,8 @@
         "platform": "darwin", 
         "virtual_memory": 8589934592
     }, 
+    "notes": [
+      "fix float-handling bug in JIT backend, allowing chaos benchmark to run to completion"
+    ],
     "timestamp": "20150121025735"
 }

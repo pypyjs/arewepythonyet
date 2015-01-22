@@ -4110,5 +4110,8 @@
         "platform": "darwin", 
         "virtual_memory": 8589934592
     }, 
+    "notes": [
+      "avoid re-compiling all jitted functions every time something changes"
+    ],
     "timestamp": "20150122012852"
 }
