@@ -71,7 +71,7 @@ class BenchEnvironment(object):
         self.engines.append(NativeEngine(self, "cpython", "python"))
         self.engines.append(NativeEngine(self, "pypy"))
         self.engines.append(NativeEngine(self, "pypy-nojit"))
-        for pypyjs_build in sorted(os.listdir(self.abspath("build", "lib"))):
+        for pypyjs_build in ("pypy", "pypy-nojit"):
             lib = self.abspath("build", "lib", pypyjs_build, "lib", "pypy.js")
             if os.path.exists(lib):
                 for js_shell in ("js", "d8"):

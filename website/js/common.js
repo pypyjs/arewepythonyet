@@ -158,8 +158,10 @@ AWPY.Graph.prototype.draw = function() {
       opts.width = $(opts.target).width();
     }
     if (!opts.height) {
-      var t_height = $(opts.target).parent().height();
-      opts.height = t_height > 280 ? t_height : 250;
+      opts.height = 280;
+      // XXX TODO: make this work without constantly growing the size...
+      // var t_height = $(opts.target).parent().height();
+      // opts.height = t_height > 280 ? t_height : 250;
     }
     // Re-rendering bar charts doesn't seem to work quite right.
     // This forces it to re-draw from scratch.
