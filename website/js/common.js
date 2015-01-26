@@ -203,8 +203,27 @@ AWPY.Graph.prototype.draw = function() {
 
 $(document).ready(function() {
 
-  $(window).on('resize', function() {
+  // Redraw graphs on window resize, to get nice widths.
+  $(window).on("resize", function() {
     AWPY.draw_all_the_graphs();
   });
+
+  // Add "view=XXX" to url hash when clicking a header link.
+  $("h2:has(a[name])").each(function() {
+    var $this = $(this);
+    $this.on("click", function() {
+      var view = $this.find("a[name]").attr("name");
+      AWPY.to_location_var("view", view);
+      $this.get(0).scrollIntoView();
+    });
+  });
+
+  // Scroll to any "view=XXX" specified in initial URL.
+  var view = AWPY.from_location_var("view");
+  if (view) {
+    $("a[name=" + view + "]").closest("h2").each(function() {
+      this.scrollIntoView();
+    });
+  }
 
 });
