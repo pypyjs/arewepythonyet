@@ -3,6 +3,33 @@
         {
             "engines": {
                 "d8+pypy": {
+                    "max": 3.102, 
+                    "mean": 2.958, 
+                    "min": 2.958
+                }, 
+                "d8+pypy-nojit": {
+                    "max": 2.668, 
+                    "mean": 2.625, 
+                    "min": 2.625
+                }, 
+                "js+pypy": {
+                    "max": 2.87, 
+                    "mean": 2.803, 
+                    "min": 2.803
+                }, 
+                "js+pypy-nojit": {
+                    "max": 2.028, 
+                    "mean": 1.931, 
+                    "min": 1.931
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
+            "timestamp": "20150126201110"
+        }, 
+        {
+            "engines": {
+                "d8+pypy": {
                     "max": 2.542, 
                     "mean": 2.44, 
                     "min": 2.44
