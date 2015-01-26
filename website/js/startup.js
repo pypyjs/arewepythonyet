@@ -82,7 +82,7 @@ $(document).ready(function() {
   $("#localtime-test-now").on("click", function() {
     var $this = $(this);
     $this.off("click");
-    $this.empty().text("Testing...");
+    $this.empty().text("Loading...");
     var err_timer = setTimeout(function () {
       $this.text("ERROR: timeout after 60 seconds");
     }, 60 * 1000);
