@@ -11,10 +11,8 @@
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,700' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=PT+Serif:400,700,400italic' rel='stylesheet' type='text/css'>
   <link href='https://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.css' rel='stylesheet' type='text/css'>
-  <!--<link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css"> -->
-  <link href='css/bootstrap.min.css' rel='stylesheet' type='text/css'>
-  <link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
   <link href='css/metricsgraphics.css' rel='stylesheet' type='text/css'>
   <link href='css/awpy.css' rel='stylesheet' type='text/css'>
 </head>
@@ -42,30 +40,36 @@
   <div class='container'>
 
     <div class="row awpy-row-graph">
-      <div class="col-lg-12">
-        <h1>Are we Python yet?</h1>
-        <p>No, not really &ndash; but we're working on it!</p>
+      <div class="col-lg-2"></div>
+      <div class="col-lg-8">
+        <h1 style="margin-bottom: 1.5em">Are we Python yet?</h1>
+
+        <p>Frankly, no, not yet &ndash; but we're working on it!</p>
+
         <p>This site tracks performance metrics for <a href="http://pypyjs.org">PyPy.js</a>, an
-        in-browser version of the <a href="http://pypy.org">PyPy</a> python interpreter.</p>
+        in-browser version of the <a href="http://pypy.org">PyPy</a> python interpreter powered
+        by <a href="http://emscripten.org/">emscripten</a> and <a href="http://asmjs.org">asm.js</a>.</p>
+
         <p>There is currently no permanent build infrastructure.  Benchmarks are run by hand and
         results are stored in static json files for offline processing.  You can
-        <a href="https://github.com/rfk/arewepythonyet">grab the code from github</a> if you'd
-        like to run them locally.</p>
+        <a href="https://github.com/rfk/arewepythonyet">get the code from github</a> if you'd
+        like to run them locally, or just <a href="/data/">grab the raw data</a> and play around
+        with it.</p>
+
+        <p>Charts are powered by the wonderful <a href="http://metricsgraphicsjs.org">MetricsGraphics.js</a>.</p>
+
       </div>
+      <div class="col-lg-2"></div>
     </div>
 
     <div class="row awpy-row-footer">
-      some sort of copyright info thing here
     </div>
 
   </div>
 
-<!--  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
   <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js'></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js' charset='utf-8'></script>-->
-  <script src='js/jquery.min.js'></script>
-  <script src='js/bootstrap.min.js'></script>
-  <script src='js/d3.min.js' charset='utf-8'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js' charset='utf-8'></script>
   <script src='js/metricsgraphics.js'></script>
   <script src='js/common.js'></script>
   <script src='js/overview.js'></script>
