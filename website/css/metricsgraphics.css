@@ -46,8 +46,8 @@
 .mg-baselines line {
     opacity: 1;
     shape-rendering: crispEdges;
-    stroke: #ccc;
-    stroke-width: 1;
+    stroke: #909090;
+    stroke-width: 0.5;
 }
 
 .mg-baselines text {
@@ -170,20 +170,40 @@
     stroke: #4040e8;
 }
 
+.mg-hover-line1-color {
+    fill: #4040e8;
+}
+
 .mg-line2-color {
     stroke: #05b378;
+}
+
+.mg-hover-line2-color {
+    fill: #05b378;
 }
 
 .mg-line3-color {
     stroke: #db4437;
 }
 
+.mg-hover-line3-color {
+    fill: #db4437;
+}
+
 .mg-line4-color {
     stroke: #f8b128;
 }
 
+.mg-hover-line4-color {
+    fill: #f8b128;
+}
+
 .mg-line5-color {
     stroke: #5c5c5c;
+}
+
+.mg-hover-line5-color {
+    fill: #5c5c5c;
 }
 
 .mg-line1-legend-color {
@@ -214,8 +234,8 @@
 .mg-markers line {
     opacity: 1;
     shape-rendering: crispEdges;
-    stroke: #ccc;
-    stroke-width: 1;
+    stroke: #909090;
+    stroke-width: 0.5;
 }
 
 .mg-markers text {
@@ -226,7 +246,23 @@
 }
 
 .mg-missing-text {
-    opacity: 0.8;
+    opacity: 0.9;
+}
+
+.mg-missing-background {
+    stroke-width:2;
+    stroke-opacity:0.05;
+    stroke-dasharray:10,5;
+    fill:none;
+    stroke:blue;
+}
+
+.mg-missing .mg-main-line {
+    opacity: 0.1;
+}
+
+.mg-missing .mg-main-area {
+    opacity: 0.03;
 }
 
 path.mg-main-area {
@@ -278,8 +314,8 @@ circle.mg-points-mono {
 .mg-y-axis line {
     opacity: 1;
     shape-rendering: crispEdges;
-    stroke: #ccc;
-    stroke-width: 1;
+    stroke: #909090;
+    stroke-width: 0.5;
 }
 
 .mg-x-axis text,
@@ -318,8 +354,8 @@ circle.mg-points-mono {
 .mg-year-marker line {
     opacity: 1;
     shape-rendering: crispEdges;
-    stroke: #ccc;
-    stroke-width: 1;
+    stroke: #909090;
+    stroke-width: 0.5;
 }
 
 .mg-year-marker-small text {

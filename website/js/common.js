@@ -123,7 +123,7 @@ AWPY.line_colours = {
   "pypy": 3,
   "pypy-nojit": 3,
   "js+pypy": 1,
-  "js+pypy-nojit": 2,
+  "js+pypy-nojit": 1,
   "d8+pypy": 2,
   "d8+pypy-nojit": 2
 };
@@ -190,11 +190,12 @@ AWPY.Graph.prototype.draw = function() {
       }
       opts.custom_line_color_map = line_colours;
     }
+    // This helps with animated re-drawing of line chars
+    // when there's a custom color map.
+    opts.max_data_size = opts.data.length;
     // Re-rendering bar charts doesn't seem to work quite right.
     // This forces it to re-draw from scratch.
-    // XXX TODO: actually even line charts are buggy when using custom
-    // colour map, disable all for now...
-    if (opts.chart_type === "bar" || true) {
+    if (opts.chart_type === "bar") {
       $t.empty();
     }
     MG.data_graphic(opts);
