@@ -5,7 +5,6 @@ $(document).ready(function() {
   });
   cfg_jit.add_widget("#config-filesize-jit");
   cfg_jit.add_widget("#config-loadtime-jit");
-  cfg_jit.add_widget("#config-local-jit");
 
   function cfg_js_engines() {
     if (cfg_jit.value === "on") {
@@ -77,6 +76,39 @@ $(document).ready(function() {
         }
         return [data_js, data_d8];
       }).bind(this));
+    }
+  });
+
+  $("#localtime-test-now").on("click", function() {
+    var $this = $(this);
+    $this.off("click");
+    $this.empty().text("Testing...");
+    var err_timer = setTimeout(function () {
+      $this.text("ERROR: timeout after 60 seconds");
+    }, 60 * 1000);
+    try {
+      var w = new Worker("/js/pypyjs_worker.js");
+      var t_start, t_end;
+      w.onerror = function(err) {
+        $this.text("ERROR: " + err.message ? err.message : err);
+      };
+      w.onmessage = function(msg) {
+        if (msg.data.log) {
+          console.log(msg.data.log);
+        } else if (msg.data.error) {
+          clearTimeout(err_timer);
+          $this.text("ERROR: " + msg.data.error);
+        } else if (msg.data.t_start) {
+          t_start = msg.data.t_start;
+        } else if (msg.data.t_end) {
+          t_end = msg.data.t_end;
+          clearTimeout(err_timer);
+          console.log(t_start, t_end);
+          $this.text("Loaded in " + ((t_end - t_start) / 1000) + " seconds");
+        }
+      };
+    } catch (err) {
+      $this.text("ERROR: " + err.message ? err.message : err);
     }
   });
 

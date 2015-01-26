@@ -25,3 +25,8 @@ h2 a {
   font: inherit;
   color: inherit;
 }
+
+.awpy-local-test-runner {
+  margin: 2em;
+  font-size: large;
+}
