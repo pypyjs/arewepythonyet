@@ -85,20 +85,28 @@ clobber:
 
 
 # XXX TODO: this should depend on the version of docker build image somehow..
-./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master
+./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypy.vm.js
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy
 	cd ./build/pypyjs && make release
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypy.js-*.tar.gz 
 	cd ./build/lib && mv pypy.js-* pypy
 
+./build/pypyjs/build/pypy.vm.js: ./build/pypyjs/.git/modules/deps/pypy/HEAD
+	cd ./build/pypyjs && rm -f ./build/pypy.vm.js
+	cd ./build/pypyjs && make ./build/pypy.vm.js
 
-./build/lib/pypy-nojit/package.json: ./build/pypyjs/$(GITREFS)/master
+
+./build/lib/pypy-nojit/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypy-nojit.vm.js
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy-nojit
 	cd ./build/pypyjs && make release-nojit
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypy-nojit.js-*.tar.gz 
 	cd ./build/lib && mv pypy-nojit.js-* pypy-nojit
+
+./build/pypyjs/build/pypy-nojit.vm.js: ./build/pypyjs/.git/modules/deps/pypy/HEAD
+	cd ./build/pypyjs && rm -f ./build/pypy-nojit.vm.js
+	cd ./build/pypyjs && make ./build/pypy-nojit.vm.js
 
 
 ./build/bin/pypy: ./build/pypyjs/$(GITREFS)/master
