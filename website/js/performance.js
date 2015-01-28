@@ -161,7 +161,12 @@ $(document).ready(function() {
   var pyBenchMeanTrend = new AWPY.Graph({
     legend: function() {
       var engines = cfg_engines();
-      engines.unshift(cfg_norm_jit())
+      var norm = cfg_norm_jit();
+      var dup_norm_idx = engines.indexOf(norm);
+      if (dup_norm_idx >= 0) {
+        engines.splice(dup_norm_idx, 1);
+      }
+      engines.unshift(norm)
       return engines;
     },
     target: "#graph-trend",
@@ -191,10 +196,10 @@ $(document).ready(function() {
           }
         }
         var data = [];
-        data.push(b_means_norm[norm]);
-        cfg_engines().forEach(function(engine) {
+        this.options.legend().forEach(function(engine) {
           data.push(b_means_norm[engine]);
         });
+        console.log("DATA", norm, data);
         return data;
       }).bind(this));
     }
@@ -207,9 +212,11 @@ $(document).ready(function() {
     legend: function() {
       var engines = cfg_engines();
       var norm = cfg_norm_jit();
-      if (engines.indexOf(norm) < 0) {
-          engines.unshift(norm);
+      var dup_norm_idx = engines.indexOf(norm);
+      if (dup_norm_idx >= 0) {
+        engines.splice(dup_norm_idx, 1);
       }
+      engines.unshift(norm)
       return engines;
     },
     target: "#graph-detail-run",
@@ -255,7 +262,12 @@ $(document).ready(function() {
   var pyBenchTrendDetail = new AWPY.Graph({
     legend: function() {
       var engines = cfg_engines();
-      engines.unshift(cfg_norm_jit())
+      var norm = cfg_norm_jit();
+      var dup_norm_idx = engines.indexOf(norm);
+      if (dup_norm_idx >= 0) {
+        engines.splice(dup_norm_idx, 1);
+      }
+      engines.unshift(norm)
       return engines;
     },
     target: "#graph-detail-trend",
@@ -287,8 +299,7 @@ $(document).ready(function() {
           }
         }
         var data = [];
-        data.push(b_values_norm[norm]);
-        cfg_engines().forEach(function(engine) {
+        this.options.legend().forEach(function(engine) {
           data.push(b_values_norm[engine]);
         });
         return data;
