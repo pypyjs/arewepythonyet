@@ -80,7 +80,7 @@ $(document).ready(function() {
           product = product * b_value;
         }
         var geo_mean = Math.pow(product, 1 / data.length);
-        var txt = "approximately ";
+        var txt = "around ";
         if (geo_mean > 1.05) {
           txt += Math.round(geo_mean * 10) / 10;
           txt += " times slower than";

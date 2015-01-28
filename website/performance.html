@@ -46,7 +46,7 @@
   <div class='container'>
 
     <div class="row awpy-row-graph">
-      <div class="col-lg-4">
+      <div class="col-md-4">
         <h2><a name="breakdown">Current Benchmarks</a></h2>
         <p>Performance on a selection of python benchmarks, normalized to that of a native python interpreter.  Smaller numbers are better.</p>
         <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-breakdown-show-js" /> js <input type="checkbox" id="config-breakdown-show-d8" /> d8 <input type="checkbox" id="config-breakdown-show-native" /> native</p>
@@ -56,11 +56,11 @@
         <p>Average performance across python benchmarks is:</p>
         <div class="awpy-comparison-summary" id="compare-breakdown-mean">X times slower than cpython</div>
       </div>
-      <div class="col-lg-8 awpy-col-graph" id="graph-py-breakdown"></div>
+      <div class="col-md-8 awpy-col-graph" id="graph-py-breakdown"></div>
     </div>
 
     <div class="row awpy-row-graph">
-      <div class="col-lg-4">
+      <div class="col-md-4">
         <h2><a name="trend">Performance Trend</a></h2>
         <p>Mean performance across all python benchmarks, normalized to that of a native python interpreter, over time.  Smaller numbers are better.</p>
         <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-trend-show-js" /> js <input type="checkbox" id="config-trend-show-d8" /> d8 <input type="checkbox" id="config-trend-show-native" /> native</p>
@@ -68,14 +68,14 @@
         <p>Bench Metric: &nbsp;&nbsp;<select id="config-trend-metric"><option>mean</option><option>min</option><option>max</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-trend-jit"><option>on</option><option>off</option></select></p>
       </div>
-      <div class="col-lg-8 col-graph">
+      <div class="col-md-8 col-graph">
         <div class="awpy-graph" id="graph-trend"></div>
         <div class="awpy-legend" id="legend-trend"></div>
       </div>
     </div>
 
     <div class="row awpy-row-graph">
-      <div class="col-lg-4">
+      <div class="col-md-4">
         <h2><a name="itrend">Individual Perf Trend</a></h2>
         <p>Performance on a single python benchmark, normalized to that of a native python interpreter, over time.  Smaller numbers are better.</p>
         <p>Benchmark: &nbsp;&nbsp;<select id="config-itrend-benchmark"></select></p>
@@ -85,14 +85,14 @@
         <p>With JIT: &nbsp;&nbsp;<select id="config-itrend-jit"><option>on</option><option>off</option></select></p>
         <p>
       </div>
-      <div class="col-lg-8 col-graph">
+      <div class="col-md-8 col-graph">
         <div class="awpy-graph" id="graph-detail-trend"></div>
         <div class="awpy-legend" id="legend-detail-trend"></div>
       </div>
     </div>
 
     <div class="row awpy-row-graph">
-      <div class="col-lg-4">
+      <div class="col-md-4">
         <h2><a name="detail">Individual Run Details</a></h2>
         <p>Detailed timings for a single run of a particular benchmark.  This is particularly useful for visualising JIT warmup overhead.  Smaller numbers are better.</p>
         <p>Benchmark: &nbsp;&nbsp;<select id="config-detail-benchmark"></select></p>
@@ -100,7 +100,7 @@
         <p>With JIT: &nbsp;&nbsp;<select id="config-detail-jit"><option>on</option><option>off</option></select></p>
         <p>
       </div>
-      <div class="col-lg-8 col-graph">
+      <div class="col-md-8 col-graph">
         <div class="awpy-graph" id="graph-detail-run"></div>
         <div class="awpy-legend" id="legend-detail-run"></div>
       </div>
