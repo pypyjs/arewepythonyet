@@ -162,7 +162,7 @@ class BenchEnvironment(object):
         results = {}
         results["misc"] = self._run_misc_benchmarks()
         results["py"] = self._run_py_benchmarks()
-        results["js"] = self._run_js_benchmarks()
+        results["bridge"] = self._run_bridge_benchmarks()
         return results
 
     def _run_misc_benchmarks(self):
@@ -187,9 +187,20 @@ class BenchEnvironment(object):
                 results[name] = self._run_py_benchmark("b_py/" + filename)
         return results
 
-    def _run_js_benchmarks(self):
+    def _run_bridge_benchmarks(self):
         results = {}
-        # XXX TODO: some useful javascript/python comparison benchmarks?
+        b_bridge_dir = self.benchpath("b_bridge")
+        engines = [e for e in self.engines if isinstance(e, JSEngine)]
+        for filename in sorted(os.listdir(b_bridge_dir)):
+            name, typ = filename.rsplit(".", 1)
+            if typ != "py" or name.startswith("_"):
+                continue
+            py_filename = self.benchpath("b_bridge", filename)
+            js_filename = self.benchpath("b_bridge", name + ".js")
+            results[name] = {
+                "py": self._run_py_benchmark(py_filename, engines),
+                "js": self._run_js_benchmark(js_filename, engines),
+            }
         return results
 
     def _run_benchmark_file_size_raw(self):
@@ -249,7 +260,7 @@ class BenchEnvironment(object):
 
         return results
 
-    def _run_js_benchmark(self, name):
+    def _run_js_benchmark(self, name, engines=None):
         """Helper to run a js file benchmark across all engines.
 
         Called with the name of a javascript benchmark file, this method
@@ -257,10 +268,12 @@ class BenchEnvironment(object):
         The file is expected to print a single number on stdout as the
         result of the benchmark.
         """
+        if engines is None:
+            engines = self.engines
         results = {}
         js_file = self.benchpath(name)
         b_name = name.rsplit("/", 1)[-1]
-        for engine in self.engines:
+        for engine in engines:
             if not isinstance(engine, JSEngine):
                 continue
             print "Measuring {} on {}".format(b_name, engine.name)
@@ -278,7 +291,7 @@ class BenchEnvironment(object):
             results[engine.name] = res
         return results
 
-    def _run_py_benchmark(self, name):
+    def _run_py_benchmark(self, name, engines=None):
         """Helper to run a py file benchmark across all engines.
 
         Called with the name of a python benchmark file, this method runs
@@ -286,10 +299,12 @@ class BenchEnvironment(object):
         file is expected to print a single number on stdout as the result
         of the benchmark.
         """
+        if engines is None:
+            engines = self.engines
         results = {}
         py_file = self.benchpath(name)
         b_name = name.rsplit("/", 1)[-1]
-        for engine in self.engines:
+        for engine in engines:
             print "Measuring {} on {}".format(b_name, engine.name)
             try:
                 N = self.num_runs
@@ -365,7 +380,11 @@ class JSEngine(Engine):
             output = self.benv.bt(cmd, timeout=self.TIMEOUT).strip()
         if not output:
             raise RuntimeError("No output from {}".format(cmd))
-        return [float(res.strip()) for res in output.split()]
+        try:
+            return [float(res.strip()) for res in output.split()]
+        except ValueError:
+            print "ERROR:", output
+            raise
 
     def run_py_benchmark(self, filename):
         # XXX TODO: the pypy.js automagic-module-file-loader currently
@@ -387,7 +406,7 @@ class JSEngine(Engine):
             "py_code": repr("".join(py_lines)),
             "py_imports": repr(py_imports),
         }
-        runner = self.benv.benchpath("b_py", "runner.js")
+        runner = self.benv.benchpath("runner.js")
         with self._templated_file(runner, **kwds) as t_filename:
             cmd = [self.js_shell, t_filename]
             output = self.benv.bt(cmd, timeout=self.TIMEOUT).strip()
