@@ -14,6 +14,7 @@ $(document).ready(function() {
   });
   cfg_jit.add_widget("#config-py-jit");
   cfg_jit.add_widget("#config-startup-jit");
+  cfg_jit.add_widget("#config-bridge-jit");
 
   // Helper functions for selecting engines based on
   // the config settings.
@@ -147,6 +148,8 @@ $(document).ready(function() {
     }
   });
 
+  // Total download size of core interpreter files.
+
   var miscDownloadSize = new AWPY.Graph({
     title: "Download Size",
     description: "Total size of all core interpreter files, over time",
@@ -182,6 +185,8 @@ $(document).ready(function() {
     }
   });
 
+  // Time taken to load and initialize the interpreter.
+
   var miscLoadTime = new AWPY.Graph({
     title: "Load Time",
     description: "Time to load and initialize the core interpreter, over time",
@@ -211,6 +216,109 @@ $(document).ready(function() {
           });
         }
         return [data_js, data_d8];
+      }).bind(this));
+    }
+  });
+
+  // Bar graph showing current status of each bridge benchmark.
+
+  var bridgeBenchBreakdown = new AWPY.Graph({
+    title: "Individual benchmarks",
+    description: function() {
+      desc = "Mean time for each python benchmark,";
+      desc += " normalized to native js";
+      return desc
+    },
+    chart_type: "bar",
+    target: "#graph-bridge-breakdown",
+    x_accessor: "value",
+    y_accessor: "label",
+    x_label: function() {
+      return "runtime (normalized to equivalent native js)";
+    },
+    baseline_accessor: "baseline",
+    data: function() {
+      return AWPY.fetch("data/summary/summary.json").then((function(summary) {
+        var data = [];
+        var product = 1;
+        var js_engines = cfg_js_engines();
+        BENCHMARKS: for (var b_name in summary.bridge.benchmarks) {
+          var b_res = summary.bridge.benchmarks[b_name];
+          for (var i = 0; i < js_engines.length; i++) {
+            if (!b_res.engines[js_engines[i]]) {
+              continue BENCHMARKS;
+            }
+          }
+          var b_product = 1;
+          for (var i = 0; i < js_engines.length; i++) {
+            b_product = b_product * b_res.engines[js_engines[i]].mean;
+          }
+          b_value = Math.pow(b_product, 1 / js_engines.length);
+          data.push({
+            label: b_name,
+            value: b_value,
+            baseline: 1,
+          });
+          product = product * b_value;
+        }
+        var geo_mean = Math.pow(product, 1 / data.length);
+        var txt = "around ";
+        if (geo_mean > 1.05) {
+          txt += Math.round(geo_mean * 10) / 10;
+          txt += " times slower than";
+        } else if (geo_mean < 0.95) {
+          txt += Math.round((1 / geo_mean) * 10) / 10;
+          txt += " times faster than";
+        } else {
+          txt += "the same as";
+        }
+        txt += " native js";
+        $("#compare-bridge-trend").text(txt);
+        return data;
+      }).bind(this))
+    }
+  });
+
+  // Geometric mean of bridge performance over time, normalized to native js.
+
+  var bridgeBenchMeanTrend = new AWPY.Graph({
+    title: "Mean performance over time",
+    description: function() {
+      desc = "Mean time across all benchmarks, over time, ";
+      desc += "normalized to equivalent native javascript";
+      return desc
+    },
+    legend: function() {
+      return cfg_js_engines();
+    },
+    target: "#graph-bridge-trend",
+    legend_target: "#legend-bridge-trend",
+    x_accessor: "timestamp",
+    y_accessor: "value",
+    y_label: function() {
+      return "runtime (normalized to equivalent native js)";
+    },
+    data: function() {
+      return AWPY.fetch("data/summary/bridge/geometric_mean.json").then((function(data) {
+        var b_values = data.values;
+        var b_means = {};
+        for (var i = b_values.length - 1; i >= 0; i--) {
+          for (var e_name in b_values[i].engines) {
+            var e_means = b_means[e_name];
+            if (!e_means) {
+              e_means = b_means[e_name] = [];
+            }
+            e_means.push({
+              timestamp: b_values[i].timestamp,
+              value: b_values[i].engines[e_name].mean
+            });
+          }
+        }
+        var data = [];
+        this.options.legend().forEach(function(engine) {
+          data.push(b_means[engine]);
+        });
+        return data;
       }).bind(this));
     }
   });

@@ -16,21 +16,6 @@ $(document).ready(function() {
   cfg_show_d8.add_widget("#config-itrend-show-d8");
   cfg_show_d8.add_widget("#config-detail-show-d8");
 
-  var cfg_show_native = new AWPY.ConfigOption("native", {
-    default: "off"
-  });
-  cfg_show_native.add_widget("#config-trend-show-native");
-  cfg_show_native.add_widget("#config-breakdown-show-native");
-  cfg_show_native.add_widget("#config-itrend-show-native");
-  cfg_show_native.add_widget("#config-detail-show-native");
-
-  var cfg_norm = new AWPY.ConfigOption("norm", {
-    default: "cpython"
-  });
-  cfg_norm.add_widget("#config-breakdown-norm");
-  cfg_norm.add_widget("#config-trend-norm");
-  cfg_norm.add_widget("#config-itrend-norm");
-
   var cfg_jit = new AWPY.ConfigOption("jit", {
     default: "on"
   });
@@ -49,7 +34,7 @@ $(document).ready(function() {
   var cfg_benchmark = new AWPY.ConfigOption("benchmark");
   AWPY.fetch("data/summary/summary.json").then(function(summary) {
     var options = [];
-    for (var b_name in summary.py.benchmarks) {
+    for (var b_name in summary.bridge.benchmarks) {
       options.push("<option>");
       options.push(b_name);
       options.push("</option>");
@@ -67,13 +52,6 @@ $(document).ready(function() {
   // Helper functions for selecting engines based on
   // the config settings.
 
-  function cfg_norm_jit() {
-    if (cfg_norm.value === "pypy" && cfg_jit.value !== "on") {
-      return "pypy-nojit";
-    }
-    return cfg_norm.value;
-  }
-
   function cfg_engines() {
     var engines = [];
     if (cfg_show_js.value === "on") {
@@ -81,9 +59,6 @@ $(document).ready(function() {
     }
     if (cfg_show_d8.value === "on") {
       engines.push("d8+pypy");
-    }
-    if (cfg_show_native.value === "on") {
-      engines.push("pypy");
     }
     if (cfg_jit.value !== "on") {
       for (var i = 0; i < engines.length; i++) {
@@ -93,44 +68,39 @@ $(document).ready(function() {
     return engines;
   }
 
-  // Bar graph showing current status of each python benchmark,
-  // normalized to the selected native python interpreter.
+  // Bar graph showing current status of each js-bridge benchmark,
+  // normalized to performance of equivalent native javascript.
 
-  var pyBenchBreakdown = new AWPY.Graph({
+  var bridgeBenchBreakdown = new AWPY.Graph({
     chart_type: "bar",
     bar_orientation: "vertical",
-    target: "#graph-py-breakdown",
+    target: "#graph-bridge-breakdown",
     x_accessor: "label",
     y_accessor: "value",
-    y_label: function() {
-      return "runtime (normalized to " + cfg_norm_jit() + ")";
-    },
+    y_label: "runtime (normalized to equivalent native js)",
     baseline_accessor: "baseline",
     data: function() {
       return AWPY.fetch("data/summary/summary.json").then((function(summary) {
         var data = [];
         var product = 1;
-        var norm = cfg_norm_jit();
         var engines = cfg_engines();
         var metric = cfg_metric.value;
         if (!engines.length) {
           $("#compare-breakdown-mean").text("undefined");
           return undefined;
         }
-        BENCHMARKS: for (var b_name in summary.py.benchmarks) {
-          var b_res = summary.py.benchmarks[b_name];
-          if (!b_res.engines[norm]) continue;
+        BENCHMARKS: for (var b_name in summary.bridge.benchmarks) {
+          var b_res = summary.bridge.benchmarks[b_name];
           for (var i = 0; i < engines.length; i++) {
             if (!b_res.engines[engines[i]]) {
               continue BENCHMARKS;
             }
           }
-          var b_norm = b_res.engines[norm][metric];
-          var b_value = 0;
+          var b_product = 1;
           for (var i = 0; i < engines.length; i++) {
-            b_value += b_res.engines[engines[i]][metric];
+            b_product = b_product * b_res.engines[engines[i]][metric];
           }
-          b_value = (b_value / engines.length) / b_norm;
+          b_value = Math.pow(b_product, 1 / engines.length);
           data.push({
             label: b_name,
             value: b_value,
@@ -142,12 +112,12 @@ $(document).ready(function() {
         var txt = "around ";
         if (geo_mean > 1.05) {
           txt += Math.round(geo_mean * 10) / 10;
-          txt += " times slower than " + norm;
+          txt += " times slower than native js";
         } else if (geo_mean < 0.95) {
           txt += Math.round((1 / geo_mean) * 10) / 10;
-          txt += " times faster than " + norm;
+          txt += " times faster than native js";
         } else {
-          txt += "the same as " + norm;
+          txt += "the same as native js";
         }
         $("#compare-breakdown-mean").text(txt);
         return data;
@@ -156,48 +126,34 @@ $(document).ready(function() {
   });
 
 
-  // Geometric mean of performance over time, normalized to native.
+  // Geometric mean of performance over time, normalized to native js.
 
-  var pyBenchMeanTrend = new AWPY.Graph({
+  var bridgeBenchMeanTrend = new AWPY.Graph({
     legend: function() {
-      var engines = cfg_engines();
-      var norm = cfg_norm_jit();
-      var dup_norm_idx = engines.indexOf(norm);
-      if (dup_norm_idx >= 0) {
-        engines.splice(dup_norm_idx, 1);
-      }
-      engines.unshift(norm)
-      return engines;
+      return cfg_engines();
     },
     target: "#graph-trend",
     legend_target: "#legend-trend",
     x_accessor: "timestamp",
     y_accessor: "value",
-    y_label: function() {
-      return "runtime (normalized to " + cfg_norm_jit() + ")";
-    },
+    y_label: "runtime (normalized to equivalent native js)",
     data: function() {
-      return AWPY.fetch("data/summary/py/geometric_mean.json").then((function(data) {
-        var norm = cfg_norm_jit();
+      return AWPY.fetch("data/summary/bridge/geometric_mean.json").then((function(data) {
         var metric = cfg_metric.value;
         var b_means = data.values;
-        var b_means_norm = {};
-        for (var i = b_means.length - 1; i >= 0; i--) {
-          var b_norm = b_means[i].engines[norm][metric];
-          for (var e_name in b_means[i].engines) {
-            var e_means_norm = b_means_norm[e_name];
-            if (!e_means_norm) {
-              e_means_norm = b_means_norm[e_name] = [];
-            }
-            e_means_norm.push({
-              timestamp: b_means[i].timestamp,
-              value: b_means[i].engines[e_name][metric] / b_norm
-            });
-          }
-        }
         var data = [];
         this.options.legend().forEach(function(engine) {
-          data.push(b_means_norm[engine]);
+          var e_means = [];
+          for (var i = b_means.length - 1; i >= 0; i--) {
+            if (!b_means[i].engines[engine]) {
+              continue;
+            }
+            e_means.push({
+              timestamp: b_means[i].timestamp,
+              value: b_means[i].engines[engine][metric]
+            });
+          }
+          data.push(e_means);
         });
         return data;
       }).bind(this));
@@ -207,16 +163,9 @@ $(document).ready(function() {
   // Graph of the performance of a specific benchmark over a run.
   // This is good for seeing how the JIT kicks in over running time.
 
-  var pyBenchRunDetail = new AWPY.Graph({
+  var bridgeBenchRunDetail = new AWPY.Graph({
     legend: function() {
-      var engines = cfg_engines();
-      var norm = cfg_norm_jit();
-      var dup_norm_idx = engines.indexOf(norm);
-      if (dup_norm_idx >= 0) {
-        engines.splice(dup_norm_idx, 1);
-      }
-      engines.unshift(norm)
-      return engines;
+      return cfg_engines();
     },
     target: "#graph-detail-run",
     legend_target: "#legend-detail-run",
@@ -232,19 +181,19 @@ $(document).ready(function() {
         latest_bench += "-" + summary.machine + ".json";
         return AWPY.fetch(latest_bench).then(function(bench) {
           var data = [];
-          var e_runs = bench.benchmarks.py[cfg_benchmark.value];
+          var e_runs = bench.benchmarks.bridge[cfg_benchmark.value];
           engines.forEach(function(e_name) {
             var e_data = [];
-            if (!e_runs[e_name]) {
+            if (!e_runs.py[e_name]) {
               e_data.push({
                 sequence: 1,
                 value: -1
               });
             } else {
-              for (var i = 0; i < e_runs[e_name][0].length; i++) {
+              for (var i = 0; i < e_runs.py[e_name][0].length; i++) {
                 e_data.push({
                   sequence: i + 1,
-                  value: e_runs[e_name][0][i]
+                  value: e_runs.py[e_name][0][i]
                 });
               }
             }
@@ -258,54 +207,42 @@ $(document).ready(function() {
 
   // Graph of performance over time for a particular benchmark.
 
-  var pyBenchTrendDetail = new AWPY.Graph({
+  var bridgeBenchTrendDetail = new AWPY.Graph({
     legend: function() {
-      var engines = cfg_engines();
-      var norm = cfg_norm_jit();
-      var dup_norm_idx = engines.indexOf(norm);
-      if (dup_norm_idx >= 0) {
-        engines.splice(dup_norm_idx, 1);
-      }
-      engines.unshift(norm)
-      return engines;
+      return cfg_engines();
     },
     target: "#graph-detail-trend",
     legend_target: "#legend-detail-trend",
     x_accessor: "timestamp",
     y_accessor: "value",
-    y_label: function() {
-      return "runtime (normalized to " + cfg_norm_jit() + ")";
-    },
+    y_label: "runtime (normalized to equivalent native js)",
     data: function() {
       var benchmark = cfg_benchmark.value;
-      var filenm = "data/summary/py/benchmarks/" + benchmark + ".json";
+      var filenm = "data/summary/bridge/benchmarks/" + benchmark + ".json";
       return AWPY.fetch(filenm).then((function(data) {
-        var norm = cfg_norm_jit();
         var metric = cfg_metric.value;
         var values = data.values;
-        var b_values_norm = {};
+        var b_values = {};
         for (var i = values.length - 1; i >= 0; i--) {
-          var b_norm = values[i].engines[norm][metric];
           for (var e_name in values[i].engines) {
-            var e_values_norm = b_values_norm[e_name];
-            if (!e_values_norm) {
-              e_values_norm = b_values_norm[e_name] = [];
+            var e_values = b_values[e_name];
+            if (!e_values) {
+              e_values = b_values[e_name] = [];
             }
-            e_values_norm.push({
+            e_values.push({
               timestamp: values[i].timestamp,
-              value: values[i].engines[e_name][metric] / b_norm
+              value: values[i].engines[e_name][metric]
             });
           }
         }
         var data = [];
         this.options.legend().forEach(function(engine) {
-          data.push(b_values_norm[engine]);
+          data.push(b_values[engine]);
         });
         return data;
       }).bind(this));
     }
   });
-
 
   AWPY.draw_all_the_graphs();
 

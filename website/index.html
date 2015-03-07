@@ -34,6 +34,7 @@
           <li class="active"><a href="/index.html">Overview</a></li>
           <li><a href="/performance.html">Performance</a></li>
           <li><a href="/startup.html">Startup</a></li>
+          <li><a href="/bridge.html">Bridge</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/about.html">About</a></li>
@@ -47,7 +48,6 @@
 
     <div class="row awpy-row-graph">
       <div class="col-md-4">
-        <!-- XXX TODO: ability to scroll to these anchors via hash fragment -->
         <h2><a href="/performance.html" name="performance">Performance</a></h2>
         <p>Performance on a selection of python benchmarks, normalized to that of a native python interpreter.  Smaller numbers are better.</p>
         <p>Normalize to: &nbsp;&nbsp;<select id="config-py-norm"><option>cpython</option><option>pypy</option></select></p>
@@ -77,6 +77,23 @@
         <div class="awpy-legend" id="legend-load-time"></div>
       </div>
     </div>
+
+    <div class="row awpy-row-graph">
+      <div class="col-md-4">
+        <h2><a href="/bridge.html" name="bridge">JS-Bridge Overhead</a></h2>
+        <p>Performance on a selection of js-bridge benchmarks, with runtime of python implementation normalized to that of equivalent native javascript.  Smaller numbers are better.</p>
+        <p>With JIT: &nbsp;&nbsp;<select id="config-bridge-jit"><option>on</option><option>off</option></select></p>
+        <p>Average performance across javascript engines and across js-bridge benchmarks is:</p>
+        <div class="awpy-comparison-summary" id="compare-bridge-trend">X times slower than native js</div>
+      </div>
+      <div class="col-md-4 awpy-col-graph" id="graph-bridge-breakdown"></div>
+      <div class="col-md-4 awpy-col-graph">
+        <div class="awpy-graph" id="graph-bridge-trend"></div>
+        <div class="awpy-legend" id="legend-bridge-trend"></div>
+      </div>
+    </div>
+
+    <div class="row awpy-row-graph">
 
     <div class="row awpy-row-footer">
     </div>

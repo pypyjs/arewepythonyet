@@ -98,7 +98,7 @@ def do_summarize(root_dir):
                         "min": min(min(run) for run in runs),
                         "max": max(max(run) for run in runs),
                     }
-                    e_summary = prev_results[prev_res_key] = e_summary
+                    prev_results[prev_res_key] = e_summary
                 b_summary["engines"][e_name] = e_summary
                 res_means.setdefault(e_name, []).append(e_summary)
             b_series.append(b_summary)
@@ -166,6 +166,84 @@ def do_summarize(root_dir):
     for b_name, b_series in misc_benchmarks.iteritems():
         with open(os.path.join(misc_dir, b_name + ".json"), "w") as f:
             json_dump({"values": b_series}, f)
+    # For each bridge benchmark, normalize each engine to its native js
+    # runtime, and take the min, max, and best arithmetic mean across
+    # all available runs.  Combine them into a single summary using
+    # geometric mean, so that we can easily normalize for display.
+    bridge_mean_series = []
+    bridge_benchmarks = {}
+    prev_results = {}
+    for res in results:
+        res_benchmarks = res["benchmarks"].get("bridge", {})
+        res_means = {}
+        for b_name in res_benchmarks:
+            b_series = bridge_benchmarks.setdefault(b_name, [])
+            b_summary = {
+                "timestamp": res["timestamp"],
+                "machine": res["machine_details"]["fingerprint"],
+                "platform": results[-1]["machine_details"]["platform"],
+                "engines": {},
+            }
+            for e_name in res_benchmarks[b_name]["py"]:
+                py_runs = res_benchmarks[b_name]["py"][e_name]
+                js_runs = res_benchmarks[b_name]["js"][e_name]
+                # For runs in which a particular (benchmark, engine) run failed
+                # we use the previous result from that machine.
+                prev_res_key = (b_summary["machine"], b_name, e_name)
+                if py_runs is None or js_runs is None:
+                    e_summary = prev_results.get(prev_res_key)
+                    if e_summary is None:
+                        continue
+                else:
+                    e_py_summary = {
+                        "mean": min(arithmetic_mean(run) for run in py_runs),
+                        "min": min(min(run) for run in py_runs),
+                        "max": max(max(run) for run in py_runs),
+                    }
+                    e_js_summary = {
+                        "mean": min(arithmetic_mean(run) for run in js_runs),
+                        "min": min(min(run) for run in js_runs),
+                        "max": max(max(run) for run in js_runs),
+                    }
+                    e_summary = {
+                        "mean": e_py_summary["mean"] / e_js_summary["mean"],
+                        "min": e_py_summary["min"] / e_js_summary["min"],
+                        "max": e_py_summary["max"] / e_js_summary["max"],
+                    }
+                    prev_results[prev_res_key] = e_summary
+                b_summary["engines"][e_name] = e_summary
+                res_means.setdefault(e_name, []).append(e_summary)
+            b_series.append(b_summary)
+        for e_name in res_means:
+            res_means[e_name] = {
+                "mean": geometric_mean(r["mean"] for r in res_means[e_name]),
+                "min": geometric_mean(r["min"] for r in res_means[e_name]),
+                "max": geometric_mean(r["max"] for r in res_means[e_name]),
+            }
+        bridge_mean_series.append({
+            "timestamp": res["timestamp"],
+            "machine": res["machine_details"]["fingerprint"],
+            "platform": results[-1]["machine_details"]["platform"],
+            "engines": res_means,
+        })
+    # Include the latest results in the summary data.
+    summary["bridge"] = {
+        "geometric_mean": bridge_mean_series[-1],
+        "benchmarks": dict((b[0], b[1][-1]) for b in bridge_benchmarks.iteritems()),
+    }
+    # Write out the full timeseries for each benchmark to a separate file.
+    # For this purpose, we put the latest timestamp first.
+    bridge_dir = os.path.join(summary_dir, "bridge")
+    if not os.path.isdir(bridge_dir):
+        os.makedirs(bridge_dir)
+    with open(os.path.join(bridge_dir, "geometric_mean.json"), "w") as f:
+        json_dump({"values": list(reversed(bridge_mean_series))}, f)
+    bridgebench_dir = os.path.join(bridge_dir, "benchmarks")
+    if not os.path.isdir(bridgebench_dir):
+        os.makedirs(bridgebench_dir)
+    for b_name, b_series in bridge_benchmarks.iteritems():
+        with open(os.path.join(bridgebench_dir, b_name + ".json"), "w") as f:
+            json_dump({"values": list(reversed(b_series))}, f)
     # Write out the summary data.
     with open(os.path.join(summary_dir, "summary.json"), "w") as f:
         json_dump(summary, f)

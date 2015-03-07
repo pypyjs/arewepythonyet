@@ -32,9 +32,9 @@
       <div class="collapse navbar-collapse bs-navbar-collapse">
         <ul class="nav navbar-nav">
           <li><a href="/index.html">Overview</a></li>
-          <li class="active"><a href="/performance.html">Performance</a></li>
+          <li><a href="/performance.html">Performance</a></li>
           <li><a href="/startup.html">Startup</a></li>
-          <li><a href="/bridge.html">Bridge</a></li>
+          <li class="active"><a href="/bridge.html">Bridge</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           <li><a href="/about.html">About</a></li>
@@ -49,23 +49,21 @@
     <div class="row awpy-row-graph">
       <div class="col-md-4">
         <h2><a name="breakdown">Current Benchmarks</a></h2>
-        <p>Performance on a selection of python benchmarks, normalized to that of a native python interpreter.  Smaller numbers are better.</p>
-        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-breakdown-show-js" /> js <input type="checkbox" id="config-breakdown-show-d8" /> d8 <input type="checkbox" id="config-breakdown-show-native" /> native</p>
-        <p>Normalized to: &nbsp;&nbsp;<select id="config-breakdown-norm"><option>cpython</option><option>pypy</option></select></p>
+        <p>Performance on a selection of javascript bridge benchmarks, showing runtime of code implemented in python normalized to that of equivalent native javascript.  Smaller numbers are better.</p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-breakdown-show-js" /> js <input type="checkbox" id="config-breakdown-show-d8" /> d8</p>
         <p>Bench Metric: &nbsp;&nbsp;<select id="config-breakdown-metric"><option>mean</option><option>min</option><option>max</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-breakdown-jit"><option>on</option><option>off</option></select></p>
-        <p>Average performance across python benchmarks is:</p>
-        <div class="awpy-comparison-summary" id="compare-breakdown-mean">X times slower than cpython</div>
+        <p>Average performance across js-bridge benchmarks is:</p>
+        <div class="awpy-comparison-summary" id="compare-breakdown-mean">X times slower than native javascript</div>
       </div>
-      <div class="col-md-8 awpy-col-graph" id="graph-py-breakdown"></div>
+      <div class="col-md-8 awpy-col-graph" id="graph-bridge-breakdown"></div>
     </div>
 
     <div class="row awpy-row-graph">
       <div class="col-md-4">
         <h2><a name="trend">Performance Trend</a></h2>
-        <p>Mean performance across all python benchmarks, normalized to that of a native python interpreter, over time.  Smaller numbers are better.</p>
-        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-trend-show-js" /> js <input type="checkbox" id="config-trend-show-d8" /> d8 <input type="checkbox" id="config-trend-show-native" /> native</p>
-        <p>Normalized to: &nbsp;&nbsp;<select id="config-trend-norm"><option>cpython</option><option>pypy</option></select></p>
+        <p>Mean performance across all js-bridge benchmarks, normalized to that of equivalent native javascript, over time.  Smaller numbers are better.</p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-trend-show-js" /> js <input type="checkbox" id="config-trend-show-d8" /> d8</p>
         <p>Bench Metric: &nbsp;&nbsp;<select id="config-trend-metric"><option>mean</option><option>min</option><option>max</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-trend-jit"><option>on</option><option>off</option></select></p>
       </div>
@@ -78,10 +76,9 @@
     <div class="row awpy-row-graph">
       <div class="col-md-4">
         <h2><a name="itrend">Individual Perf Trend</a></h2>
-        <p>Performance on a single python benchmark, normalized to that of a native python interpreter, over time.  Smaller numbers are better.</p>
+        <p>Performance on a single js-bridge benchmark, normalized to that of equivalent native javascript, over time.  Smaller numbers are better.</p>
         <p>Benchmark: &nbsp;&nbsp;<select id="config-itrend-benchmark"></select></p>
-        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-itrend-show-js" /> js <input type="checkbox" id="config-itrend-show-d8" /> d8 <input type="checkbox" id="config-itrend-show-native" /> native</p>
-        <p>Normalized to: &nbsp;&nbsp;<select id="config-itrend-norm"><option>cpython</option><option>pypy</option></select></p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-itrend-show-js" /> js <input type="checkbox" id="config-itrend-show-d8" /> d8</p>
         <p>Bench Metric: &nbsp;&nbsp;<select id="config-itrend-metric"><option>mean</option><option>min</option><option>max</option></select></p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-itrend-jit"><option>on</option><option>off</option></select></p>
         <p>
@@ -97,7 +94,7 @@
         <h2><a name="detail">Individual Run Details</a></h2>
         <p>Detailed timings for a single run of a particular benchmark.  This is particularly useful for visualising JIT warmup overhead.  Smaller numbers are better.</p>
         <p>Benchmark: &nbsp;&nbsp;<select id="config-detail-benchmark"></select></p>
-        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-detail-show-js" /> js <input type="checkbox" id="config-detail-show-d8" /> d8 <input type="checkbox" id="config-detail-show-native" /> native</p>
+        <p>Compare: &nbsp;&nbsp;<input type="checkbox" id="config-detail-show-js" /> js <input type="checkbox" id="config-detail-show-d8" /> d8</p>
         <p>With JIT: &nbsp;&nbsp;<select id="config-detail-jit"><option>on</option><option>off</option></select></p>
         <p>
       </div>
@@ -118,7 +115,7 @@
   <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js' charset='utf-8'></script>
   <script src='js/metricsgraphics.js'></script>
   <script src='js/common.js'></script>
-  <script src='js/performance.js'></script>
+  <script src='js/bridge.js'></script>
 </body>
 
 </html>
