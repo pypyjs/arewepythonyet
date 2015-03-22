@@ -324,7 +324,7 @@ class BenchEnvironment(object):
 
 class Engine(object):
 
-    TIMEOUT = 10 * 60  # timeout bench runs after 10 minutes
+    TIMEOUT = 20 * 60  # timeout bench runs after 20 minutes
 
     def __init__(self, benv, name):
         self.benv = benv
