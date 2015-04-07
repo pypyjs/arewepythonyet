@@ -131,7 +131,12 @@ clobber:
 	cd ./build/gecko-dev/js/src && mkdir -p build
 	cd ./build/gecko-dev/js/src/build && ../configure --enable-optimize --disable-debug
 	cd ./build/gecko-dev/js/src/build && make
-	ln -fs ../gecko-dev/js/src/build/dist/bin/js ./build/bin/js
+	# This suddenly doesn't like being run via symlink, it makes it
+	# unable to find some relatively-loaded .dylib files.
+	#ln -fs ../gecko-dev/js/src/build/dist/bin/js ./build/bin/js
+	echo "#!/bin/sh" > ./build/bin/js
+	echo "\`dirname \$$0\`/../gecko-dev/js/src/build/dist/bin/js \$$@" >> ./build/bin/js
+	chmod +x ./build/bin/js
 
 
 ./build/bin/d8: ./build/v8/$(GITREFS)/master \
