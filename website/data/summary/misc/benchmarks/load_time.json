@@ -3,6 +3,60 @@
         {
             "engines": {
                 "d8+pypy": {
+                    "max": 1.864, 
+                    "mean": 1.535, 
+                    "min": 1.535
+                }, 
+                "d8+pypy-nojit": {
+                    "max": 1.276, 
+                    "mean": 1.007, 
+                    "min": 1.007
+                }, 
+                "js+pypy": {
+                    "max": 4.192, 
+                    "mean": 3.103, 
+                    "min": 3.103
+                }, 
+                "js+pypy-nojit": {
+                    "max": 1.913, 
+                    "mean": 1.802, 
+                    "min": 1.802
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
+            "timestamp": "20150412071859"
+        }, 
+        {
+            "engines": {
+                "d8+pypy": {
+                    "max": 1.659, 
+                    "mean": 1.576, 
+                    "min": 1.576
+                }, 
+                "d8+pypy-nojit": {
+                    "max": 1.021, 
+                    "mean": 0.962, 
+                    "min": 0.962
+                }, 
+                "js+pypy": {
+                    "max": 3.438, 
+                    "mean": 3.291, 
+                    "min": 3.291
+                }, 
+                "js+pypy-nojit": {
+                    "max": 2.115, 
+                    "mean": 1.83, 
+                    "min": 1.83
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
+            "timestamp": "20150407120540"
+        }, 
+        {
+            "engines": {
+                "d8+pypy": {
                     "max": 2.899, 
                     "mean": 2.617, 
                     "min": 2.617
