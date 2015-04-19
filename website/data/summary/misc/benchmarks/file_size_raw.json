@@ -15,6 +15,23 @@
             }, 
             "machine": "922174a8388e0a2f", 
             "platform": "darwin", 
+            "timestamp": "20150419120147"
+        }, 
+        {
+            "engines": {
+                "pypy": {
+                    "max": 20197911, 
+                    "mean": 20197911.0, 
+                    "min": 20197911
+                }, 
+                "pypy-nojit": {
+                    "max": 11263190, 
+                    "mean": 11263190.0, 
+                    "min": 11263190
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
             "timestamp": "20150412071859"
         }, 
         {
