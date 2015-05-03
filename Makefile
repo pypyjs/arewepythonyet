@@ -88,6 +88,7 @@ clobber:
 ./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypy.vm.js
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy
+	rm -rf ./build/pypyjs/build/*.tar.gz
 	cd ./build/pypyjs && make release
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypy.js-*.tar.gz 
 	cd ./build/lib && mv pypy.js-* pypy
