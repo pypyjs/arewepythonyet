@@ -3,6 +3,23 @@
         {
             "engines": {
                 "pypy": {
+                    "max": 20237228, 
+                    "mean": 20237228.0, 
+                    "min": 20237228
+                }, 
+                "pypy-nojit": {
+                    "max": 11272894, 
+                    "mean": 11272894.0, 
+                    "min": 11272894
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
+            "timestamp": "20150513124516"
+        }, 
+        {
+            "engines": {
+                "pypy": {
                     "max": 20155363, 
                     "mean": 20155363.0, 
                     "min": 20155363
