@@ -59,7 +59,7 @@ clobber:
 
 ./build/pypyjs/$(GITREFS)/master:
 	mkdir -p ./build/bin
-	git clone --recursive https://github.com/rfk/pypyjs ./build/pypyjs
+	git clone --recursive https://github.com/pypyjs/pypyjs ./build/pypyjs
 
 
 ./build/cpython/$(GITREFS)/2.7:
