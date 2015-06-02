@@ -112,12 +112,12 @@ clobber:
 
 
 ./build/bin/pypy: ./build/pypyjs/.git/modules/deps/pypy/HEAD
-	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --output=./deps/pypy/pypy.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --no-shared --output=./deps/pypy/pypy.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
 	ln -fs ../pypyjs/deps/pypy/pypy.exe ./build/bin/pypy
 
 
 ./build/bin/pypy-nojit: ./build/pypyjs/.git/modules/deps/pypy/HEAD
-	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=2 --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --output=./deps/pypy/pypy-nojit.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=2 --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --no-shared --output=./deps/pypy/pypy-nojit.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
 	ln -fs ../pypyjs/deps/pypy/pypy-nojit.exe ./build/bin/pypy-nojit
 
 
