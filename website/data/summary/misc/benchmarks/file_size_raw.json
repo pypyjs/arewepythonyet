@@ -3,6 +3,40 @@
         {
             "engines": {
                 "pypy": {
+                    "max": 20127532, 
+                    "mean": 20127532.0, 
+                    "min": 20127532
+                }, 
+                "pypy-nojit": {
+                    "max": 11289874, 
+                    "mean": 11289874.0, 
+                    "min": 11289874
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
+            "timestamp": "20150602144008"
+        }, 
+        {
+            "engines": {
+                "pypy": {
+                    "max": 20234861, 
+                    "mean": 20234861.0, 
+                    "min": 20234861
+                }, 
+                "pypy-nojit": {
+                    "max": 11279851, 
+                    "mean": 11279851.0, 
+                    "min": 11279851
+                }
+            }, 
+            "machine": "922174a8388e0a2f", 
+            "platform": "darwin", 
+            "timestamp": "20150522123705"
+        }, 
+        {
+            "engines": {
+                "pypy": {
                     "max": 20252009, 
                     "mean": 20252009.0, 
                     "min": 20252009
