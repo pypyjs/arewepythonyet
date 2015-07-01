@@ -226,7 +226,7 @@ class BenchEnvironment(object):
                 results[name] = 0
                 for filename in ("pypy.js", "pypy.vm.js",):
                     results[name] += get_size(engine, filename)
-                for filename in ("pypy.vm.js.mem", "pypy.vm.js.lzmem"):
+                for filename in ("pypy.vm.js.mem", "pypy.vm.js.zmem"):
                     results[name] += get_size(engine, filename, ignore=True)
 
         return results
@@ -255,7 +255,7 @@ class BenchEnvironment(object):
                 results[name] = 0
                 for filename in ("pypy.js", "pypy.vm.js",):
                     results[name] += get_size(engine, filename)
-                for filename in ("pypy.vm.js.mem", "pypy.vm.js.lzmem"):
+                for filename in ("pypy.vm.js.mem", "pypy.vm.js.zmem"):
                     results[name] += get_size(engine, filename, ignore=True)
 
         return results
