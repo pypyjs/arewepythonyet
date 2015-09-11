@@ -85,30 +85,30 @@ clobber:
 
 
 # XXX TODO: this should depend on the version of docker build image somehow..
-./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypy.vm.js
+./build/lib/pypy/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypyjs.vm.js
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy
-	rm -rf ./build/pypyjs/build/pypy.js-*.tar.gz
+	rm -rf ./build/pypyjs/build/pypyjs-*.tar.gz
 	cd ./build/pypyjs && make release
-	cd ./build/lib && tar -xzf ../pypyjs/build/pypy.js-*.tar.gz 
-	cd ./build/lib && mv pypy.js-* pypy
+	cd ./build/lib && tar -xzf ../pypyjs/build/pypyjs-*.tar.gz 
+	cd ./build/lib && mv pypyjs-* pypy
 
-./build/pypyjs/build/pypy.vm.js: ./build/pypyjs/.git/modules/deps/pypy/HEAD
-	cd ./build/pypyjs && rm -f ./build/pypy.vm.js
-	cd ./build/pypyjs && make ./build/pypy.vm.js
+./build/pypyjs/build/pypyjs.vm.js: ./build/pypyjs/.git/modules/deps/pypy/HEAD
+	cd ./build/pypyjs && rm -f ./build/pypyjs.vm.js
+	cd ./build/pypyjs && make ./build/pypyjs.vm.js
 
 
-./build/lib/pypy-nojit/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypy-nojit.vm.js
+./build/lib/pypy-nojit/package.json: ./build/pypyjs/$(GITREFS)/master ./build/pypyjs/build/pypyjs-nojit.vm.js
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy-nojit
-	rm -rf ./build/pypyjs/build/pypy-nojit.js-*.tar.gz
+	rm -rf ./build/pypyjs/build/pypyjs-nojit-*.tar.gz
 	cd ./build/pypyjs && make release-nojit
-	cd ./build/lib && tar -xzf ../pypyjs/build/pypy-nojit.js-*.tar.gz 
-	cd ./build/lib && mv pypy-nojit.js-* pypy-nojit
+	cd ./build/lib && tar -xzf ../pypyjs/build/pypyjs-nojit-*.tar.gz 
+	cd ./build/lib && mv pypyjs-nojit-* pypy-nojit
 
-./build/pypyjs/build/pypy-nojit.vm.js: ./build/pypyjs/.git/modules/deps/pypy/HEAD
-	cd ./build/pypyjs && rm -f ./build/pypy-nojit.vm.js
-	cd ./build/pypyjs && make ./build/pypy-nojit.vm.js
+./build/pypyjs/build/pypyjs-nojit.vm.js: ./build/pypyjs/.git/modules/deps/pypy/HEAD
+	cd ./build/pypyjs && rm -f ./build/pypyjs-nojit.vm.js
+	cd ./build/pypyjs && make ./build/pypyjs-nojit.vm.js
 
 
 ./build/bin/pypy: ./build/pypyjs/.git/modules/deps/pypy/HEAD

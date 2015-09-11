@@ -72,7 +72,7 @@ class BenchEnvironment(object):
         self.engines.append(NativeEngine(self, "pypy"))
         self.engines.append(NativeEngine(self, "pypy-nojit"))
         for pypyjs_build in ("pypy", "pypy-nojit"):
-            lib = self.abspath("build", "lib", pypyjs_build, "lib", "pypy.js")
+            lib = self.abspath("build", "lib", pypyjs_build, "lib", "pypyjs.js")
             if os.path.exists(lib):
                 for js_shell in ("js", "d8"):
                     self.engines.append(JSEngine(self, js_shell, pypyjs_build))
@@ -224,9 +224,9 @@ class BenchEnvironment(object):
             if name not in results:
                 print "Measuring file size for {}".format(name)
                 results[name] = 0
-                for filename in ("pypy.js", "pypy.vm.js",):
+                for filename in ("pypyjs.js", "pypyjs.vm.js",):
                     results[name] += get_size(engine, filename)
-                for filename in ("pypy.vm.js.mem", "pypy.vm.js.zmem"):
+                for filename in ("pypyjs.vm.js.mem", "pypyjs.vm.js.zmem"):
                     results[name] += get_size(engine, filename, ignore=True)
 
         return results
@@ -253,9 +253,9 @@ class BenchEnvironment(object):
             if name not in results:
                 print "Measuring compressed file size for {}".format(name)
                 results[name] = 0
-                for filename in ("pypy.js", "pypy.vm.js",):
+                for filename in ("pypyjs.js", "pypyjs.vm.js",):
                     results[name] += get_size(engine, filename)
-                for filename in ("pypy.vm.js.mem", "pypy.vm.js.zmem"):
+                for filename in ("pypyjs.vm.js.mem", "pypyjs.vm.js.zmem"):
                     results[name] += get_size(engine, filename, ignore=True)
 
         return results
@@ -372,7 +372,7 @@ class JSEngine(Engine):
         if not os.path.exists(pypyjs_build):
             raise RuntimeError("Dir not found: {}".format(pypyjs_build))
         self.pypyjs_build = pypyjs_build
-        self.pypyjs_lib = os.path.join(pypyjs_build, "lib", "pypy.js")
+        self.pypyjs_lib = os.path.join(pypyjs_build, "lib", "pypyjs.js")
 
     def run_js_benchmark(self, filename):
         with self._templated_file(filename) as t_filename:
@@ -387,7 +387,7 @@ class JSEngine(Engine):
             raise
 
     def run_py_benchmark(self, filename):
-        # XXX TODO: the pypy.js automagic-module-file-loader currently
+        # XXX TODO: the PyPy.js automagic-module-file-loader currently
         # can't handle import statements in multi-line source code.
         # For now we parse out our imports and load them explicitly,
         # but we should eventually fix the bug on the JS side...
