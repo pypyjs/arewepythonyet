@@ -143,7 +143,7 @@ clobber:
 ./build/bin/d8: ./build/v8/$(GITREFS)/master \
                 ./build/depot_tools/$(GITREFS)/master
 	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" gclient sync
-	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang make x64.release
+	cd ./build/v8 && PATH="$(CURDIR)/build/depot_tools:$$PATH" CC=clang GYP_DEFINES="v8_use_external_startup_data=0" make x64.release
 	ln -fs ../v8/out/x64.release/d8 ./build/bin/d8
 
 
