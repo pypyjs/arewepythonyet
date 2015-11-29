@@ -3,6 +3,10 @@
 GITREFS = .git/refs/heads
 VENV = ./build/venv
 
+# Handy defaults for building with homebrew on OSX.
+CFLAGS = -I/usr/local/opt/openssl/include -I/usr/local/Cellar/libffi/3.0.13/lib/libffi-3.0.13/include
+LDFLAGS = -L/usr/local/opt/openssl/lib -L/usr/local/Cellar/libffi/3.0.13/lib/libffi-3.0.13/lib
+
 
 .PHONY: all
 all: build bench
@@ -89,6 +93,7 @@ clobber:
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy
 	rm -rf ./build/pypyjs/build/pypyjs-*.tar.gz
+	cd ./build/pypyjs && npm install
 	cd ./build/pypyjs && make release
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypyjs-*.tar.gz 
 	cd ./build/lib && mv pypyjs-* pypy
@@ -102,6 +107,7 @@ clobber:
 	mkdir -p ./build/lib
 	rm -rf ./build/lib/pypy-nojit
 	rm -rf ./build/pypyjs/build/pypyjs-nojit-*.tar.gz
+	cd ./build/pypyjs && npm install
 	cd ./build/pypyjs && make release-nojit
 	cd ./build/lib && tar -xzf ../pypyjs/build/pypyjs-nojit-*.tar.gz 
 	cd ./build/lib && mv pypyjs-nojit-* pypy-nojit
@@ -112,12 +118,12 @@ clobber:
 
 
 ./build/bin/pypy: ./build/pypyjs/.git/modules/deps/pypy/HEAD
-	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --no-shared --output=./deps/pypy/pypy.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang $(CFLAGS) $(LDFLAGS)" --opt=jit --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --no-shared --output=./deps/pypy/pypy.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
 	ln -fs ../pypyjs/deps/pypy/pypy.exe ./build/bin/pypy
 
 
 ./build/bin/pypy-nojit: ./build/pypyjs/.git/modules/deps/pypy/HEAD
-	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang" --opt=2 --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --no-shared --output=./deps/pypy/pypy-nojit.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
+	cd ./build/pypyjs && python ./deps/pypy/rpython/bin/rpython --backend=c --cc="clang $(CFLAGS) $(LDFLAGS)" --opt=2 --gcrootfinder=shadowstack --translation-backendopt-remove_asserts --no-shared --output=./deps/pypy/pypy-nojit.exe ./deps/pypy/pypy/goal/targetpypystandalone.py --withoutmod-bz2 --withoutmod-_rawffi --withoutmod-cpyext
 	ln -fs ../pypyjs/deps/pypy/pypy-nojit.exe ./build/bin/pypy-nojit
 
 
